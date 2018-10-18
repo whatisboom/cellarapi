@@ -34,9 +34,9 @@ api.listen(port, (err: Error) => {
         require(`./routes/${file}`).default(api);
       }
     );
+    console.log(`server is listening on ${port}`);
   });
   db.on("error", e => {
     console.log(e);
   });
-  console.log(`server is listening on ${port}`);
 });

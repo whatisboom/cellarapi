@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user.model";
-import { Schema } from 'mongoose';
 
 function post(req: Request, res: Response): void {
   UserModel.create(req.body, (err, user) => {
@@ -21,7 +20,12 @@ function list(req: Request, res: Response): void {
 function get(req: Request, res: Response): void {
   UserModel.findOne({
     _id: req.params.userId
-  }).populate('beers').exec((err, user) => {
+  }).populate({
+    path: 'beers',
+    populate: {
+      path: 'brewery'
+    }
+  }).exec((err, user) => {
     if (err) {
       res.status(400).json({
         error: err

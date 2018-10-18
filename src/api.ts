@@ -15,7 +15,7 @@ api.use(
   jwt({
     secret: "wack"
   }).unless({
-    path: ["/auth", /users\/?.*/, /beers\/?.*/]
+    path: ["/auth", /users\/?.*/, /beers\/?.*/, /breweries\/?.*/]
   })
 );
 

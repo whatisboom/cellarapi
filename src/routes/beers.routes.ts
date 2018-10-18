@@ -1,7 +1,7 @@
 import { Router } from "express";
 import BeersCtrl from "../controllers/beers.ctrl";
 
-export default function userRoutes(api: Router) {
+export default function beersRoutes(api: Router) {
   api
     .route("/beers")
     .get(BeersCtrl.list)

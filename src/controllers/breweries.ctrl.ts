@@ -1,52 +1,52 @@
-import { Request, Response } from "express";
-import BeerModel from "../models/beer.model";
+import { Request, Response } from 'express';
+import BreweryModel from '../models/brewery.model';
 
 function post(req: Request, res: Response): void {
-  BeerModel.create(req.body, (error, beer) => {
+  BreweryModel.create(req.body, (error, brewery) => {
     if (error) {
       res.status(500).json({
         error
       });
     } else {
       res.json({
-        beer
+        brewery
       });
     }
-  });
+  })
 }
 
 function list(req: Request, res: Response): void {
-  BeerModel.find((err, beers) => {
+  BreweryModel.find((error, breweries) => {
     res.json({
-      beers
+      breweries
     });
   });
 }
 
 function get(req: Request, res: Response): void {
-  BeerModel.findOne({
-    _id: req.params.beerId
-  }).populate('brewery').exec((err, beer) => {
-    if (err) {
+  BreweryModel.findOne({
+    _id: req.params.breweryId
+  }).exec((error, brewery) => {
+        if (error) {
       res.status(400).json({
-        error: err
+        error
       });
-    } else if (beer === null) {
+    } else if (brewery === null) {
       res.status(404).json({
         error: 'not-found'
       })
     } else {
       res.json({
-        beer
+        brewery
       });
     }
   });
 }
 
 function put(req: Request, res: Response): void {
-  BeerModel.updateOne(req.body, (err, user) => {
+  BreweryModel.updateOne(req.body, (err, brewery) => {
     res.json({
-      user
+      brewery
     });
   });
 }
@@ -55,7 +55,7 @@ function remove(req: Request, res: Response): void {
   res.status(204).send();
 }
 
-const BeersCtrl = {
+const BreweriesCtrl = {
   post,
   list,
   get,
@@ -63,4 +63,4 @@ const BeersCtrl = {
   remove
 };
 
-export default BeersCtrl;
+export default BreweriesCtrl;
