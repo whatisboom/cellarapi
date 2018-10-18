@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as jsonwebtoken from 'jsonwebtoken';
 import UserModel from '../models/user.model';
 
-async function post(req: Request, res:Response) {
+async function post(req: Request, res:Response): Promise<void> {
   const {
     username,
     password

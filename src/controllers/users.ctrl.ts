@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import * as bcrypt from 'bcryptjs';
 
-function post(req: Request, res: Response): void {
+async function post(req: Request, res: Response): Promise<void> {
   const {
     username,
     password,
@@ -11,42 +11,49 @@ function post(req: Request, res: Response): void {
     lastName
   } = req.body
   const salt = bcrypt.genSaltSync(10);
-  UserModel.create({
-    username,
-    email,
-    firstName,
-    lastName,
-    salt,
-    hash: UserModel.schema.methods.getPasswordHash(password, salt),
-  }, (err, user) => {
+  try {
+    const user = await UserModel.create({
+      username,
+      email,
+      firstName,
+      lastName,
+      salt,
+      hash: UserModel.schema.methods.getPasswordHash(password, salt),
+    });
     res.json({
       user
     });
-  });
+  } catch(error) {
+    res.status(400).json({
+      error
+    });
+  }
 }
 
-function list(req: Request, res: Response): void {
-  UserModel.find((err, users) => {
+async function list(req: Request, res: Response): Promise<void> {
+  try {
+    const users = await UserModel.find({});
     res.json({
       users
     });
-  });
+  } catch (error) {
+    res.status(500).json({
+      error
+    });
+  }
 }
 
-function get(req: Request, res: Response): void {
-  UserModel.findOne({
-    _id: req.params.userId
-  }).populate({
-    path: 'beers',
-    populate: {
-      path: 'brewery'
-    }
-  }).exec((err, user) => {
-    if (err) {
-      res.status(400).json({
-        error: err
-      });
-    } else if (user === null) {
+async function get(req: Request, res: Response): Promise<void> {
+  try {
+    const user = await UserModel.findOne({
+      _id: req.params.userId
+    }).populate({
+      path: 'beers',
+      populate: {
+        path: 'brewery'
+      }
+    }).exec();
+    if (user === null) {
       res.status(404).json({
         error: 'not-found'
       })
@@ -55,57 +62,79 @@ function get(req: Request, res: Response): void {
         user
       });
     }
-  });
+  } catch (error) {
+    res.status(400).json({
+      error
+    });
+  }
 }
 
-function put(req: Request, res: Response): void {
-  UserModel.updateOne(req.body, (err, user) => {
+async function put(req: Request, res: Response): Promise<void> {
+  try{
+    const user = await UserModel.updateOne({
+      _id: req.params.userId
+    }, req.body);
     res.json({
       user
     });
-  });
+  } catch(error) {
+    res.status(400).json({
+      error
+    });
+  }
 }
 
-function remove(req: Request, res: Response): void {
-  res.status(204).send();
+async function remove(req: Request, res: Response): Promise<void> {
+  try {
+    await UserModel.deleteOne({
+      id: req.params.userId
+    });
+    res.status(204).send();
+  } catch(error) {
+    res.status(400).json({
+      error
+    });
+  }
 }
 
-function addBeer(req: Request, res: Response): void {
-  const {
-    beerId
-  } = req.body;
-  UserModel.findOne({
-    _id: req.params.userId
-  }, (error, user) => {
-    if (error) {
-      res.status(400).json({
-        error
-      });
-    } else if (user === null) {
+async function addBeer(req: Request, res: Response): Promise<void> {
+  try {
+    const {
+      beerId
+    } = req.body;
+    
+    const user = await UserModel.findOne({
+      _id: req.params.userId
+    });
+    
+    if (user === null) {
       res.status(404).json({
         error: "not-found"
       });
     } else {
-      const beers = user.get('beers');
-      const hasBeerAlready = beers.filter((beer) => {
-        return beer === beerId;
-      }).length > 0;
+      const beers: string[] = user.get('beers');
+      const hasBeerAlready = beers.indexOf(beerId) !== -1;
       if (!hasBeerAlready) {
         beers.push(beerId);
       }
-      user.save((error) => {
-        if (error) {
-          res.status(500).json({
-            error
-          });
-        } else {
-          res.json({
-            user
-          });
+      try {
+        if (user.isModified()) {
+          await user.save();
         }
-      });
+        res.json({
+          user
+        });
+      } catch (error) {
+        res.status(500).json({
+          error
+        });
+      }
     }
-  });
+  } catch (error) {
+    res.status(400).json({
+      error
+    });
+  }
 }
 
 
