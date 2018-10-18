@@ -13,9 +13,11 @@ api.use(bodyParser.json());
 
 api.use(
   jwt({
-    secret: "wack"
+    secret: process.env.JWT_SECRET
   }).unless({
-    path: ["/auth", /users\/?.*/, /beers\/?.*/, /breweries\/?.*/]
+    path: [
+      /auth\/?.*/
+    ]
   })
 );
 
@@ -28,7 +30,7 @@ api.use(
   ) => {
     if (err.name === "UnauthorizedError") {
       res.status(401).json({
-        error: "Invalid Auth"
+        error: "invalid-jwt"
       });
     }
   }

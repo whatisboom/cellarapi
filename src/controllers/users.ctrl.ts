@@ -1,8 +1,24 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user.model";
+import * as bcrypt from 'bcryptjs';
 
 function post(req: Request, res: Response): void {
-  UserModel.create(req.body, (err, user) => {
+  const {
+    username,
+    password,
+    email,
+    firstName,
+    lastName
+  } = req.body
+  const salt = bcrypt.genSaltSync(10);
+  UserModel.create({
+    username,
+    email,
+    firstName,
+    lastName,
+    salt,
+    hash: UserModel.schema.methods.getPasswordHash(password, salt),
+  }, (err, user) => {
     res.json({
       user
     });

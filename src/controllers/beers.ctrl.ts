@@ -16,20 +16,26 @@ function post(req: Request, res: Response): void {
 }
 
 function list(req: Request, res: Response): void {
-  BeerModel.find((err, beers) => {
-    res.json({
-      beers
-    });
+  BeerModel.find((error, beers) => {
+    if (error) {
+      res.status(500).json({
+        error
+      });
+    } else {
+      res.json({
+        beers
+      });
+    }
   });
 }
 
 function get(req: Request, res: Response): void {
   BeerModel.findOne({
     _id: req.params.beerId
-  }).populate('brewery').exec((err, beer) => {
-    if (err) {
+  }).populate('brewery').exec((error, beer) => {
+    if (error) {
       res.status(400).json({
-        error: err
+        error
       });
     } else if (beer === null) {
       res.status(404).json({

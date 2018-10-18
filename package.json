@@ -18,11 +18,13 @@
     "@types/express-jwt": "^0.0.40",
     "@types/mongoose": "^5.2.19",
     "@types/node": "^10.11.7",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "compression": "^1.7.3",
     "cors": "^2.8.4",
     "express": "^4.16.4",
     "express-jwt": "^5.3.1",
+    "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.3.3",
     "typescript": "^3.1.3"
   }
