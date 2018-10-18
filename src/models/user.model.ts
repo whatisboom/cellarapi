@@ -23,6 +23,8 @@ const UserSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'beer'
    }]
+}, {
+   versionKey: false
 });
 
 UserSchema.methods.getPasswordHash = function(password: string, salt: string): string {
