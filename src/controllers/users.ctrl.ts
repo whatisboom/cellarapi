@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import * as bcrypt from 'bcryptjs';
 
+const excludeFields = '-hash -salt'
+
 async function post(req: Request, res: Response): Promise<void> {
   const {
     username,
@@ -19,7 +21,7 @@ async function post(req: Request, res: Response): Promise<void> {
       lastName,
       salt,
       hash: UserModel.schema.methods.getPasswordHash(password, salt),
-    });
+    }, excludeFields);
     res.json({
       user
     });
@@ -32,7 +34,7 @@ async function post(req: Request, res: Response): Promise<void> {
 
 async function list(req: Request, res: Response): Promise<void> {
   try {
-    const users = await UserModel.find({});
+    const users = await UserModel.find({}, excludeFields);
     res.json({
       users
     });
@@ -86,10 +88,14 @@ async function put(req: Request, res: Response): Promise<void> {
 
 async function remove(req: Request, res: Response): Promise<void> {
   try {
-    await UserModel.deleteOne({
-      id: req.params.userId
-    });
-    res.status(204).send();
+    const user = await UserModel.findByIdAndDelete(req.params.userId);
+    if (user === null) {
+      res.status(404).json({
+        error: 'not-found'
+      });
+    } else {
+      res.status(204).send();
+    }
   } catch(error) {
     res.status(400).json({
       error

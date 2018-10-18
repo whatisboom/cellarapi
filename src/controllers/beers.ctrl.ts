@@ -1,43 +1,38 @@
 import { Request, Response } from "express";
 import BeerModel from "../models/beer.model";
 
-function post(req: Request, res: Response): void {
-  BeerModel.create(req.body, (error, beer) => {
-    if (error) {
-      res.status(500).json({
-        error
-      });
-    } else {
-      res.json({
-        beer
-      });
-    }
-  });
+async function post(req: Request, res: Response): Promise<void> {
+  try {
+    const beer = await BeerModel.create(req.body);
+    res.json({
+      beer
+    });
+  } catch (error) {
+    res.status(500).json({
+      error
+    });
+  }
 }
 
-function list(req: Request, res: Response): void {
-  BeerModel.find((error, beers) => {
-    if (error) {
-      res.status(500).json({
-        error
-      });
-    } else {
-      res.json({
-        beers
-      });
-    }
-  });
+async function list(req: Request, res: Response): Promise<void> {
+  try {
+    const beers = await BeerModel.find({});
+    res.json({
+      beers
+    });
+  } catch (error) {
+    res.status(500).json({
+      error
+    });
+  }
 }
 
-function get(req: Request, res: Response): void {
-  BeerModel.findOne({
-    _id: req.params.beerId
-  }).populate('brewery').exec((error, beer) => {
-    if (error) {
-      res.status(400).json({
-        error
-      });
-    } else if (beer === null) {
+async function get(req: Request, res: Response): Promise<void> {
+  try {
+    const beer = await BeerModel.findOne({
+      _id: req.params.beerId
+    }).populate('brewery').exec();
+    if (beer === null) {
       res.status(404).json({
         error: 'not-found'
       })
@@ -46,19 +41,45 @@ function get(req: Request, res: Response): void {
         beer
       });
     }
-  });
-}
-
-function put(req: Request, res: Response): void {
-  BeerModel.updateOne(req.body, (err, user) => {
-    res.json({
-      user
+  } catch (error) {
+    res.status(500).json({
+      error
     });
-  });
+  }
 }
 
-function remove(req: Request, res: Response): void {
-  res.status(204).send();
+async function put(req: Request, res: Response): Promise<void> {
+  try {
+    const beer = await BeerModel.updateOne({
+        _id: req.params.beerId    
+      },
+      req.body
+    );
+    res.json({
+      beer
+    });
+  } catch (error) {
+    res.status(400).json({
+      error
+    })
+  }
+}
+
+async function remove(req: Request, res: Response): Promise<void> {
+  try {
+    const beer = await BeerModel.findByIdAndDelete(req.params.beerId);
+    if (beer === null) {
+      res.status(404).json({
+        error: 'not-found'
+      });
+    } else {
+      res.status(204).send();
+    }
+  } catch (error) {
+    res.status(500).json({
+      error
+    });
+  }
 }
 
 const BeersCtrl = {
