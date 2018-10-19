@@ -2,6 +2,8 @@ import { Router } from 'express';
 import AuthCtrl from '../controllers/auth.ctrl';
 
 export default function(api: Router) {
-  api.route('/auth')
-    .post(AuthCtrl.post);
+  api.route('/auth/signup')
+    .post(AuthCtrl.signup)
+  api.route('/auth/signin')
+    .post(AuthCtrl.signin);
 }
