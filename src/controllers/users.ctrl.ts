@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import * as bcrypt from 'bcryptjs';
 
-const excludeFields = '-hash -salt'
+const excludeFields = '-hash -salt';
 
 async function post(req: Request, res: Response): Promise<void> {
   const {

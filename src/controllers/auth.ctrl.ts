@@ -12,21 +12,14 @@ async function post(req: Request, res:Response): Promise<void> {
     const user = await UserModel.findOne({
       username
     }, 'username salt hash');
-    
-    const salt = user.get('salt');
 
     const isValidPassword = user.schema.methods.isPasswordValid(
       password, user
     );
     if (isValidPassword) {
-  
       const token = jsonwebtoken.sign({
-        data: {
-          user
-        }
-      }, process.env.JWT_SECRET, {
-        expiresIn: '1h'
-      });
+        user
+      }, process.env.JWT_SECRET);
 
       res.json({
         token
