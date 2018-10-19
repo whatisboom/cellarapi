@@ -16,7 +16,7 @@ api.use(
     secret: process.env.JWT_SECRET
   }).unless({
     path: [
-      /auth|users|beers|breweries\/?.*/,
+      /auth\/?.*/ // all auth routes
     ]
   })
 );
