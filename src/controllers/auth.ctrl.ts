@@ -11,7 +11,13 @@ async function signup(req: Request, res: Response): Promise<void> {
   } = req.body;
   try {
     const existingUser = await UserModel.find({
-      email
+      $or: [
+        {
+          username
+        }, {
+          email
+        }
+      ]
     });
     if (existingUser.length !== 0) {
       res.status(409).json({
