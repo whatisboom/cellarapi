@@ -36,4 +36,9 @@ api.use(
   }
 );
 
+api.use((req, res, next) => {
+  console.log(req.user);
+  next();
+});
+
 export default api;

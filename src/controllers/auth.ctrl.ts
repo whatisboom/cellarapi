@@ -10,10 +10,10 @@ async function signup(req: Request, res: Response): Promise<void> {
     username
   } = req.body;
   try {
-    const existingUser = await UserModel.findOne({
+    const existingUser = await UserModel.find({
       email
     });
-    if (existingUser !== null) {
+    if (existingUser.length !== 0) {
       res.status(409).json({
         error: 'duplicate'
       });
@@ -44,8 +44,14 @@ async function signup(req: Request, res: Response): Promise<void> {
 async function signin(req: Request, res:Response): Promise<void> {
   const {
     username,
-    password
+    password,
+    forever
   } = req.body;
+  
+  const options: jsonwebtoken.SignOptions = {};
+  if (!forever) {
+    options.expiresIn = '1d';
+  }
 
   try {
     const user = await UserModel.findOne({
@@ -57,8 +63,8 @@ async function signin(req: Request, res:Response): Promise<void> {
     );
     if (isValidPassword) {
       const token = jsonwebtoken.sign({
-        user
-      }, process.env.JWT_SECRET);
+        username: user.get('username')
+      }, process.env.JWT_SECRET, options);
 
       res.json({
         token
