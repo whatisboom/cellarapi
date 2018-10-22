@@ -62,14 +62,15 @@ async function signin(req: Request, res:Response): Promise<void> {
   try {
     const user = await UserModel.findOne({
       username
-    }, 'username salt hash');
+    }, 'username salt hash role');
 
     const isValidPassword = user.schema.methods.isPasswordValid(
       password, user
     );
     if (isValidPassword) {
       const token = jsonwebtoken.sign({
-        username: user.get('username')
+        username: user.get('username'),
+        role: user.get('role')
       }, process.env.JWT_SECRET, options);
 
       res.json({

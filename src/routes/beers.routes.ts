@@ -1,15 +1,16 @@
 import { Router } from "express";
 import BeersCtrl from "../controllers/beers.ctrl";
+import { requireRolePermission } from '../middleware';
 
 export default function beersRoutes(api: Router) {
   api
     .route("/beers")
-    .get(BeersCtrl.list)
-    .post(BeersCtrl.post);
+    .get(requireRolePermission('beers', 'read'), BeersCtrl.list)
+    .post(requireRolePermission('beers', 'create'), BeersCtrl.post);
 
   api
     .route("/beers/:beerId")
-    .get(BeersCtrl.get)
-    .put(BeersCtrl.put)
-    .delete(BeersCtrl.remove);
+    .get(requireRolePermission('beers', 'read'), BeersCtrl.get)
+    .put(requireRolePermission('beers', 'update'), BeersCtrl.put)
+    .delete(requireRolePermission('beers', 'delete'), BeersCtrl.remove);
 }

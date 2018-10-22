@@ -21,7 +21,10 @@ async function post(req: Request, res: Response): Promise<void> {
       lastName,
       salt,
       hash: UserModel.schema.methods.getPasswordHash(password, salt),
-    }, excludeFields);
+    });
+    excludeFields.split(' ').forEach(field => {
+      user[field.slice(1)] = undefined;
+    });
     res.json({
       user
     });
@@ -49,7 +52,7 @@ async function get(req: Request, res: Response): Promise<void> {
   try {
     const user = await UserModel.findOne({
       _id: req.params.userId
-    }).populate({
+    }, excludeFields).populate({
       path: 'beers',
       populate: {
         path: 'brewery'
@@ -73,9 +76,11 @@ async function get(req: Request, res: Response): Promise<void> {
 
 async function put(req: Request, res: Response): Promise<void> {
   try{
-    const user = await UserModel.updateOne({
+    const user = await UserModel.findOneAndUpdate({
       _id: req.params.userId
-    }, req.body);
+    }, req.body, {
+      fields: excludeFields
+    });
     res.json({
       user
     });
