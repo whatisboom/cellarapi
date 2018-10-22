@@ -5,8 +5,7 @@ import { requireRolePermission } from '../middleware';
 export default function usersRoutes(api: Router) {
   api
     .route("/users")
-    .get(requireRolePermission('users', 'read'), UsersCtrl.list)
-    .post(requireRolePermission('users', 'create'), UsersCtrl.post);
+    .get(requireRolePermission('users', 'read'), UsersCtrl.list);
 
   api
     .route("/users/:userId")

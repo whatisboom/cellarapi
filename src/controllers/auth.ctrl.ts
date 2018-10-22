@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import * as jsonwebtoken from 'jsonwebtoken';
-import UserModel from '../models/user.model';
+import UserModel, { IUserModel } from '../models/user.model';
 import * as bcrypt from 'bcryptjs';
+import { ApiError } from '../types';
+
+const excludeFields = '-hash -salt';
 
 export class AuthCtrl {
   public async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -11,7 +14,7 @@ export class AuthCtrl {
       username
     } = req.body;
     try {
-      const existingUser = await UserModel.find({
+      const existingUser: IUserModel = await UserModel.findOne({
         $or: [
           {
             username
@@ -20,29 +23,29 @@ export class AuthCtrl {
           }
         ]
       });
-      if (existingUser.length !== 0) {
-        res.status(409).json({
-          error: 'duplicate'
-        });
+      if (existingUser) {
+        const e: ApiError = <ApiError>new Error('duplicate-user');
+        e.status = 409;
+        throw e;
       }
-    } catch (error) {
-      res.status(500).json({
-        error
-      });
+    } catch (e) {
+      return next(e);
     }
     try {
       const salt = bcrypt.genSaltSync(10);
       const user = await UserModel.create({
-        email,
-        username,
+        ...req.body,
         hash: UserModel.schema.methods.getPasswordHash(password, salt),
         salt
+      });
+      excludeFields.split(' ').forEach(field => {
+        user[field.slice(1)] = undefined;
       });
       res.json({
         user
       });
     } catch (e) {
-      next(e)
+      return next(e)
     }
   }
   
@@ -53,12 +56,14 @@ export class AuthCtrl {
       forever
     } = req.body;
     
-    const options: jsonwebtoken.SignOptions = {};
+    const jwtOptions: jsonwebtoken.SignOptions = {};
+
     if (!forever) {
-      options.expiresIn = '1d';
+      jwtOptions.expiresIn = '1d';
     }
   
     try {
+
       const user = await UserModel.findOne({
         username
       }, 'username salt hash role');
@@ -66,19 +71,22 @@ export class AuthCtrl {
       const isValidPassword = user.schema.methods.isPasswordValid(
         password, user
       );
+
       if (isValidPassword) {
+
         const token = jsonwebtoken.sign({
           username: user.get('username'),
           role: user.get('role')
-        }, process.env.JWT_SECRET, options);
-  
+        }, process.env.JWT_SECRET, jwtOptions);
+
         res.json({
           token
         });
+
       } else {
-        res.status(401).json({
-          error: 'invalid-auth'
-        });
+        const e: ApiError = <ApiError>new Error('invalid-auth')
+        e.status = 401;
+        throw e;
       }
     } catch (e) {
       next(e);

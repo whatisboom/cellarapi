@@ -1,40 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import UserModel, { IUserModel } from "../models/user.model";
 import * as bcrypt from 'bcryptjs';
+import { ApiError } from '../types';
 
 const excludeFields = '-hash -salt';
 
 export class UsersCtrl {
-
-  public async post(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const {
-      username,
-      password,
-      email,
-      firstName,
-      lastName
-    } = req.body
-    const salt = bcrypt.genSaltSync(10);
-    try {
-      const user: IUserModel = await UserModel.create({
-        username,
-        email,
-        firstName,
-        lastName,
-        salt,
-        hash: UserModel.schema.methods.getPasswordHash(password, salt),
-      });
-      excludeFields.split(' ').forEach(field => {
-        user[field.slice(1)] = undefined;
-      });
-      res.json({
-        user
-      });
-    } catch(e) {
-      e.status = 400;
-      next(e);
-    }
-  }
   
   public async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -43,7 +14,7 @@ export class UsersCtrl {
         users
       });
     } catch (e) {
-      next(e);
+      return next(e);
     }
   }
   
@@ -58,16 +29,16 @@ export class UsersCtrl {
         }
       }).exec();
       if (user === null) {
-        res.status(404).json({
-          error: 'not-found'
-        })
+        const e: ApiError = <ApiError>new Error('not-found');
+        e.status = 404;
+        throw e;
       } else {
         res.json({
           user
         });
       }
     } catch (e) {
-      next(e);
+      return next(e);
     }
   }
   
@@ -75,14 +46,21 @@ export class UsersCtrl {
     try{
       const user: IUserModel = await UserModel.findOneAndUpdate({
         _id: req.params.userId
-      }, req.body, {
-        fields: excludeFields
-      });
-      res.json({
-        user
-      });
+      }, <IUserModel>req.body, {
+        fields: excludeFields,
+        new: true
+      }).exec();
+      if (user === null) {
+        const e: ApiError = <ApiError>new Error('not-found');
+        e.status = 404;
+        throw e;
+      } else {
+        res.json({
+          user
+        });
+      }
     } catch(e) {
-      next(e);
+      return next(e);
     }
   }
   
@@ -90,14 +68,14 @@ export class UsersCtrl {
     try {
       const user: IUserModel = await UserModel.findByIdAndDelete(req.params.userId);
       if (user === null) {
-        res.status(404).json({
-          error: 'not-found'
-        });
+        const e: ApiError = <ApiError>new Error('not-found');
+        e.status = 404;
+        throw e;
       } else {
-        res.status(204).send();
+        res.sendStatus(204);
       }
     } catch(e) {
-      next(e);
+      return next(e);
     }
   }
   
@@ -112,24 +90,25 @@ export class UsersCtrl {
       });
       
       if (user === null) {
-        res.status(404).json({
-          error: "not-found"
-        });
+        const e: ApiError = <ApiError>new Error('not-found');
+        e.status = 404;
+        throw e;
       } else {
         const beers: string[] = user.get('beers');
         const hasBeerAlready: boolean = beers.indexOf(beerId) !== -1;
         if (!hasBeerAlready) {
           beers.push(beerId);
-        }
-        if (user.isModified()) {
           await user.save();
+          res.json({
+            user
+          });
         }
-        res.json({
-          user
-        });
+        else {
+          res.sendStatus(304);
+        }
       }
     } catch (e) {
-      next(e);
+      return next(e);
     }
   }
 
