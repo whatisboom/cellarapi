@@ -1,11 +1,18 @@
-import { model, Schema } from 'mongoose';
+import { Document, Model, model, Schema } from 'mongoose';
+import { IBrewery } from '../types';
 
-const BrewerySchema = new Schema({
-  name: { type: String, required: true }
+export interface IBreweryModel extends IBrewery, Document {
+}
+
+const BrewerySchema: Schema = new Schema({
+  name: {
+    type: String,
+    required: true
+  }
 }, {
   versionKey: false
 });
 
-const BreweryModel = model('brewery', BrewerySchema);
+const BreweryModel: Model<IBreweryModel> = model<IBreweryModel>('brewery', BrewerySchema);
 
 export default BreweryModel;

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import UserModel, { IUserModel } from "../models/user.model";
 import * as bcrypt from 'bcryptjs';
 
@@ -6,7 +6,7 @@ const excludeFields = '-hash -salt';
 
 export class UsersCtrl {
 
-  public async post(req: Request, res: Response): Promise<void> {
+  public async post(req: Request, res: Response, next: NextFunction): Promise<void> {
     const {
       username,
       password,
@@ -37,20 +37,18 @@ export class UsersCtrl {
     }
   }
   
-  public async list(req: Request, res: Response): Promise<void> {
+  public async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const users: IUserModel[] = await UserModel.find({}, excludeFields);
       res.json({
         users
       });
-    } catch (error) {
-      res.status(500).json({
-        error
-      });
+    } catch (e) {
+      next(e);
     }
   }
   
-  public async get(req: Request, res: Response): Promise<void> {
+  public async get(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const user: IUserModel = await UserModel.findOne({
         _id: req.params.userId
@@ -69,14 +67,12 @@ export class UsersCtrl {
           user
         });
       }
-    } catch (error) {
-      res.status(400).json({
-        error
-      });
+    } catch (e) {
+      next(e);
     }
   }
   
-  public async put(req: Request, res: Response): Promise<void> {
+  public async put(req: Request, res: Response, next: NextFunction): Promise<void> {
     try{
       const user: IUserModel = await UserModel.findOneAndUpdate({
         _id: req.params.userId
@@ -86,14 +82,12 @@ export class UsersCtrl {
       res.json({
         user
       });
-    } catch(error) {
-      res.status(400).json({
-        error
-      });
+    } catch(e) {
+      next(e);
     }
   }
   
-  public async remove(req: Request, res: Response): Promise<void> {
+  public async remove(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const user: IUserModel = await UserModel.findByIdAndDelete(req.params.userId);
       if (user === null) {
@@ -103,14 +97,12 @@ export class UsersCtrl {
       } else {
         res.status(204).send();
       }
-    } catch(error) {
-      res.status(400).json({
-        error
-      });
+    } catch(e) {
+      next(e);
     }
   }
   
-  public async addBeer(req: Request, res: Response): Promise<void> {
+  public async addBeer(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const {
         beerId
@@ -137,10 +129,8 @@ export class UsersCtrl {
           user
         });
       }
-    } catch (error) {
-      res.status(500).json({
-        error
-      });
+    } catch (e) {
+      next(e);
     }
   }
 

@@ -1,66 +1,65 @@
-import { Request, Response } from 'express';
-import BreweryModel from '../models/brewery.model';
+import { Request, Response, NextFunction } from 'express';
+import BreweryModel, { IBreweryModel } from '../models/brewery.model';
 
-function post(req: Request, res: Response): void {
-  BreweryModel.create(req.body, (error, brewery) => {
-    if (error) {
-      res.status(500).json({
-        error
-      });
-    } else {
+export class BreweriesCtrl {
+
+  public async post(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const brewery: IBreweryModel = await BreweryModel.create(req.body);
       res.json({
         brewery
       });
+    } catch (e) {
+      next(e);
     }
-  })
-}
-
-function list(req: Request, res: Response): void {
-  BreweryModel.find((error, breweries) => {
-    res.json({
-      breweries
-    });
-  });
-}
-
-function get(req: Request, res: Response): void {
-  BreweryModel.findOne({
-    _id: req.params.breweryId
-  }).exec((error, brewery) => {
-        if (error) {
-      res.status(400).json({
-        error
+  }
+  
+  public async list(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const breweries: IBreweryModel[] = await BreweryModel.find({});
+      res.json({
+        breweries
       });
-    } else if (brewery === null) {
-      res.status(404).json({
-        error: 'not-found'
-      })
-    } else {
+    } catch (e) {
+      next(e)
+    }
+  }
+  
+  public async get(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const brewery: IBreweryModel = await BreweryModel.findOne({
+        _id: req.params.breweryId
+      }).exec();
       res.json({
         brewery
       });
+    } catch(e) {
+      next(e);
     }
-  });
+    
+  }
+  
+  public async put(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const brewery = await BreweryModel.findOneAndUpdate({
+        _id: req.params.breweryId
+      }, req.body);
+      res.json({
+        brewery
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+  
+  public async remove(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const brewery: IBreweryModel = await BreweryModel.findByIdAndDelete(req.params.breweryId);
+      res.status(204).send();
+    } catch(e) {
+      next(e);
+    }
+  }
 }
 
-function put(req: Request, res: Response): void {
-  BreweryModel.updateOne(req.body, (err, brewery) => {
-    res.json({
-      brewery
-    });
-  });
-}
-
-function remove(req: Request, res: Response): void {
-  res.status(204).send();
-}
-
-const BreweriesCtrl = {
-  post,
-  list,
-  get,
-  put,
-  remove
-};
-
-export default BreweriesCtrl;
+export default new BreweriesCtrl();
