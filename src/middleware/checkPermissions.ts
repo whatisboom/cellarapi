@@ -50,7 +50,7 @@ export function requireRolePermission(resource: string, permission: string) {
   return checkPermissions
 }
 
-export function userEditingOwn(req, user) {
+export function userEditingOwn(req: Request, user: IUser) {
   if (
     req.method === 'PUT' &&
     req.route.path === '/users/:userId' &&
