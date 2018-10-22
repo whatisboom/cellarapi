@@ -8,7 +8,8 @@
     "clean": "rm -rf ./dist/ && mkdir dist",
     "dev": "npm run clean && ./node_modules/.bin/tsc -w",
     "build": "npm run clean && ./node_modules/.bin/tsc",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "ip": "curl http://169.254.169.254/latest/meta-data/public-ipv4"
   },
   "author": "",
   "license": "ISC",
