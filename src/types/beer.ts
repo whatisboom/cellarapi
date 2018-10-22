@@ -3,7 +3,7 @@ import {
 } from './index';
 
 export interface IBeer{
-  _id: string;
+  _id: any;
   name?: string;
   abv?: number;
   brewery?: Array<string | IBrewery>;

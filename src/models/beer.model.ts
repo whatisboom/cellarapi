@@ -1,6 +1,10 @@
-import { model, Schema } from "mongoose";
+import { Document, Model, model, Schema } from "mongoose";
+import { IBeer } from '../types';
 
-const BeerSchema = new Schema({
+export interface IBeerModel extends IBeer, Document {
+}
+
+const BeerSchema: Schema = new Schema({
   name: { type: String, required: true },
   abv: Number,
   style: String,
@@ -9,6 +13,6 @@ const BeerSchema = new Schema({
   versionKey: false
 });
 
-const BeerModel = model('beer', BeerSchema);
+const BeerModel: Model<IBeerModel> = model<IBeerModel>('beer', BeerSchema);
 
 export default BeerModel;

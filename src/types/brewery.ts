@@ -1,4 +1,4 @@
 export interface IBrewery {
-  _id: string;
+  _id: any;
   name?: string;
 }
