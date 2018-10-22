@@ -1,93 +1,78 @@
-import { Request, Response } from "express";
-import BeerModel from "../models/beer.model";
+import { Request, Response, NextFunction } from "express";
+import BeerModel, { IBeerModel } from "../models/beer.model";
 
-async function post(req: Request, res: Response): Promise<void> {
-  try {
-    const beer = await BeerModel.create(req.body);
-    res.json({
-      beer
-    });
-  } catch (error) {
-    res.status(500).json({
-      error
-    });
-  }
-}
+export class BeersCtrl {
 
-async function list(req: Request, res: Response): Promise<void> {
-  try {
-    const beers = await BeerModel.find({});
-    res.json({
-      beers
-    });
-  } catch (error) {
-    res.status(500).json({
-      error
-    });
-  }
-}
-
-async function get(req: Request, res: Response): Promise<void> {
-  try {
-    const beer = await BeerModel.findOne({
-      _id: req.params.beerId
-    }).populate('brewery').exec();
-    if (beer === null) {
-      res.status(404).json({
-        error: 'not-found'
-      })
-    } else {
+  public async post(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const beer: IBeerModel = await BeerModel.create(req.body);
       res.json({
         beer
       });
+    } catch (e) {
+      next(e)
     }
-  } catch (error) {
-    res.status(500).json({
-      error
-    });
   }
-}
-
-async function put(req: Request, res: Response): Promise<void> {
-  try {
-    const beer = await BeerModel.updateOne({
-        _id: req.params.beerId    
-      },
-      req.body
-    );
-    res.json({
-      beer
-    });
-  } catch (error) {
-    res.status(400).json({
-      error
-    })
-  }
-}
-
-async function remove(req: Request, res: Response): Promise<void> {
-  try {
-    const beer = await BeerModel.findByIdAndDelete(req.params.beerId);
-    if (beer === null) {
-      res.status(404).json({
-        error: 'not-found'
+  
+  public async list(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const beers: IBeerModel[] = await BeerModel.find({});
+      res.json({
+        beers
       });
-    } else {
-      res.status(204).send();
+    } catch (e) {
+      next(e);
     }
-  } catch (error) {
-    res.status(500).json({
-      error
-    });
+  }
+  
+  public async get(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const beer: IBeerModel = await BeerModel.findOne({
+        _id: req.params.beerId
+      }).populate('brewery').exec();
+      if (beer === null) {
+        res.status(404).json({
+          error: 'not-found'
+        })
+      } else {
+        res.json({
+          beer
+        });
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+  
+  public async put(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const beer: IBeerModel = await BeerModel.findOneAndUpdate({
+          _id: req.params.beerId    
+        },
+        req.body
+      );
+      res.json({
+        beer
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+  
+  public async remove(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const beer: IBeerModel = await BeerModel.findByIdAndDelete(req.params.beerId);
+      if (beer === null) {
+        res.status(404).json({
+          error: 'not-found'
+        });
+      } else {
+        res.status(204).send();
+      }
+    } catch (e) {
+      next(e);
+    }
   }
 }
 
-const BeersCtrl = {
-  post,
-  list,
-  get,
-  put,
-  remove
-};
-
-export default BeersCtrl;
+export default new BeersCtrl();

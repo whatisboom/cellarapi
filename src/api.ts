@@ -4,6 +4,10 @@ import * as compression from "compression";
 import * as jwt from "express-jwt";
 import * as bodyParser from "body-parser";
 
+declare interface CellarError extends Error {
+  status: number;
+};
+
 const api = express();
 
 api.use(cors());
@@ -33,11 +37,27 @@ api.use(
         error: "invalid-jwt"
       });
     }
+    next(err);
   }
 );
 
-api.use((req, res, next) => {
-  next();
-});
+api.use(
+  (
+    error: CellarError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (!error.status && !res.headersSent) {
+      error.status = 500;
+      res.status(error.status).json({
+        error
+      });
+    } else {
+      next(error);
+    }
+    
+  }
+); 
 
 export default api;

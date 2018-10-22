@@ -47,6 +47,7 @@ UserSchema.methods.isPasswordValid = function(password: string, user: Schema): b
 
 UserSchema.pre('save', function(next) {
   this.set('updatedAt', new Date());
+  next();
 });
 
 const UserModel: Model<IUserModel> = model<IUserModel>('user', UserSchema);

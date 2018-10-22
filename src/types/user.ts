@@ -10,4 +10,5 @@ export interface IUser {
   firstName?: string;
   lastName?: string;
   beers?: Array<string | IBeer>;
+  updatedAt: Date;
 }

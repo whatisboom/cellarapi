@@ -30,10 +30,9 @@ export class UsersCtrl {
       res.json({
         user
       });
-    } catch(error) {
-      res.status(400).json({
-        error
-      });
+    } catch(e) {
+      e.status = 400;
+      next(e);
     }
   }
   

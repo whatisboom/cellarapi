@@ -10,6 +10,7 @@ export class BreweriesCtrl {
         brewery
       });
     } catch (e) {
+      e.status = 404;
       next(e);
     }
   }
