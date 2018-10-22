@@ -5,6 +5,7 @@ import {
 } from 'express';
 
 import {
+  ApiError,
   IPermissionsMap,
   IUser
 } from '../types';
@@ -37,26 +38,16 @@ export function requireRolePermission(resource: string, permission: string) {
       user
     } = req;
     if (!user) {
-      next(new Error('error: user not found'));
-    } else if (
-      userEditingOwn(req, user) ||
-      userHasPermission(user, permission, resource)
-    ) {
-      next();
+      const e: ApiError = <ApiError>new Error('user-unauthorized');
+      e.status = 401;
+      return next(e);
+    } else if (userHasPermission(user, permission, resource)) {
+      return next();
     } else {
-      next(new Error('user-unauthorized'));
+      const e: ApiError = <ApiError>new Error('user-unauthorized');
+      e.status = 401;
+      return next(e);
     }
   }
   return checkPermissions
-}
-
-export function userEditingOwn(req: Request, user: IUser) {
-  if (
-    req.method === 'PUT' &&
-    req.route.path === '/users/:userId' &&
-    req.params.userId === user._id
-  ) {
-    return true;
-  }
-  return false;
 }

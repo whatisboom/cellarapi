@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import BreweryModel, { IBreweryModel } from '../models/brewery.model';
+import BeerModel, { IBeerModel } from '../models/beer.model';
 
 export class BreweriesCtrl {
 
@@ -11,7 +12,7 @@ export class BreweriesCtrl {
       });
     } catch (e) {
       e.status = 404;
-      next(e);
+      return next(e);
     }
   }
   
@@ -22,7 +23,7 @@ export class BreweriesCtrl {
         breweries
       });
     } catch (e) {
-      next(e)
+      return next(e)
     }
   }
   
@@ -35,7 +36,7 @@ export class BreweriesCtrl {
         brewery
       });
     } catch(e) {
-      next(e);
+      return next(e);
     }
     
   }
@@ -44,12 +45,14 @@ export class BreweriesCtrl {
     try {
       const brewery = await BreweryModel.findOneAndUpdate({
         _id: req.params.breweryId
-      }, req.body);
+      }, req.body, {
+        new: true
+      });
       res.json({
         brewery
       });
     } catch (e) {
-      next(e);
+      return next(e);
     }
   }
   
@@ -58,7 +61,20 @@ export class BreweriesCtrl {
       const brewery: IBreweryModel = await BreweryModel.findByIdAndDelete(req.params.breweryId);
       res.status(204).send();
     } catch(e) {
-      next(e);
+      return next(e);
+    }
+  }
+  
+  public async getBeersForBrewery(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const beers: IBeerModel[] = await BeerModel.find({
+        brewery: req.params.breweryId
+      }).populate('brewery');
+      res.json({
+        beers
+      });
+    } catch (e) {
+      return next(e);
     }
   }
 }

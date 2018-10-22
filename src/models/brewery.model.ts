@@ -9,13 +9,21 @@ const BrewerySchema: Schema = new Schema({
     type: String,
     required: true
   },
+  createdAt: Date,
   updatedAt: Date
 }, {
   versionKey: false
 });
 
 BrewerySchema.pre('save', function(next) {
-  this.set('updatedAt', new Date());
+  this.set('createdAt', new Date());
+  next();
+});
+
+BrewerySchema.pre('findOneAndUpdate', function(next) {
+  this.update({
+    updatedAt: new Date()
+  });
   next();
 });
 

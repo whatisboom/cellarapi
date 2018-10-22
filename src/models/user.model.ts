@@ -28,7 +28,8 @@ const UserSchema: Schema = new Schema({
   },
   firstName: String,
   lastName: String,
-  updateAd: Date,
+  createdAt: Date,
+  updatedAt: Date,
   beers: [{
     type: Schema.Types.ObjectId,
     ref: 'beer'
@@ -46,7 +47,14 @@ UserSchema.methods.isPasswordValid = function(password: string, user: Schema): b
 }
 
 UserSchema.pre('save', function(next) {
-  this.set('updatedAt', new Date());
+  this.set('createdAt', new Date());
+  next();
+});
+
+UserSchema.pre('findOneAndUpdate', function(next) {
+  this.update({
+    updatedAt: new Date()
+  });
   next();
 });
 

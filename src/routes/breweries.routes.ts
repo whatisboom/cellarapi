@@ -12,4 +12,7 @@ export default function breweriesRoutes(api: Router) {
     .get(requireRolePermission('breweries', 'read'), BreweriesCtrl.get)
     .put(requireRolePermission('breweries', 'update'), BreweriesCtrl.put)
     .delete(requireRolePermission('breweries', 'delete'), BreweriesCtrl.remove);
+    
+  api.route('/breweries/:breweryId/beers')
+    .get(requireRolePermission('beers', 'read'), BreweriesCtrl.getBeersForBrewery)
 }

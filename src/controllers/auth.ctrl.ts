@@ -66,7 +66,7 @@ export class AuthCtrl {
 
       const user = await UserModel.findOne({
         username
-      }, 'username salt hash role');
+      }, 'username _id salt hash role');
   
       const isValidPassword = user.schema.methods.isPasswordValid(
         password, user
@@ -75,6 +75,7 @@ export class AuthCtrl {
       if (isValidPassword) {
 
         const token = jsonwebtoken.sign({
+          _id: user.get('_id'),
           username: user.get('username'),
           role: user.get('role')
         }, process.env.JWT_SECRET, jwtOptions);

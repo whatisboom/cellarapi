@@ -1,6 +1,9 @@
 import { Router } from "express";
 import UsersCtrl from "../controllers/users.ctrl";
-import { requireRolePermission } from '../middleware';
+import {
+  requireRolePermission,
+  allowOwnProfile
+} from '../middleware';
 
 export default function usersRoutes(api: Router) {
   api
@@ -10,7 +13,7 @@ export default function usersRoutes(api: Router) {
   api
     .route("/users/:userId")
     .get(requireRolePermission('users', 'read'), UsersCtrl.get)
-    .put(requireRolePermission('users', 'update'), UsersCtrl.put)
+    .put(requireRolePermission('users', 'update'), allowOwnProfile, UsersCtrl.put)
     .delete(requireRolePermission('users', 'delete'), UsersCtrl.remove);
     
   api.route("/users/:userId/beers")

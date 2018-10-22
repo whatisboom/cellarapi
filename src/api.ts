@@ -48,8 +48,8 @@ api.use(
     res: express.Response,
     next: express.NextFunction
   ) => {
-    if (!error.status && !res.headersSent) {
-      error.status = 500;
+    if (!res.headersSent) {
+      error.status = error.status || 500;
       res.status(error.status).json({
         error
       });
