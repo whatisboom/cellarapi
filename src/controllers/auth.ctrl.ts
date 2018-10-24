@@ -4,7 +4,7 @@ import UserModel, { IUserModel } from '../models/user.model';
 import * as bcrypt from 'bcryptjs';
 import { ApiError } from '../types';
 
-const excludeFields = '-hash -salt';
+const excludeFields: string[] = ['hash', 'salt'];
 
 export class AuthCtrl {
   public async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -38,8 +38,8 @@ export class AuthCtrl {
         hash: UserModel.schema.methods.getPasswordHash(password, salt),
         salt
       });
-      excludeFields.split(' ').forEach(field => {
-        user[field.slice(1)] = undefined;
+      excludeFields.forEach(field => {
+        user[field] = undefined;
       });
       res.json({
         user
