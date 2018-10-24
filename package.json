@@ -2,17 +2,22 @@
   "name": "cellarapi",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/index.js",
+  "main": "./src/index.ts",
   "scripts": {
+    "postinstall": "npm run build",
+    "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf ./dist/ && mkdir dist",
-    "dev": "npm run clean && ./node_modules/.bin/tsc -w",
+    "dev": "npm run build -w",
     "build": "npm run clean && ./node_modules/.bin/tsc",
     "tsc": "tsc",
     "ip": "curl http://169.254.169.254/latest/meta-data/public-ipv4"
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "8.12.0"
+  },
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/compression": "^0.0.36",
