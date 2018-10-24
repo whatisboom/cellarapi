@@ -9,6 +9,8 @@ const BrewerySchema: Schema = new Schema({
     type: String,
     required: true
   },
+  city: String,
+  state: String,
   createdAt: Date,
   updatedAt: Date
 }, {
