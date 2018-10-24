@@ -9,11 +9,13 @@ export interface IUserModel extends IUser, Document {
 const UserSchema: Schema = new Schema({
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   username: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   role: {
     type: String,
