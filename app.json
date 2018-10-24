@@ -1,0 +1,27 @@
+{
+  "name": "cellarapi",
+  "description": "",
+  "scripts": {
+  },
+  "env": {
+    "BREWERYDB_KEY": {
+      "required": true
+    },
+    "DB_STRING": {
+      "required": true
+    },
+    "JWT_SECRET": {
+      "generator": "secret"
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
