@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { readdirSync } from "fs";
-import * as path from "path";
-import api from "./api";
-import * as mongoose from "mongoose";
+import { readdirSync } from 'fs';
+import * as path from 'path';
+import api from './api';
+import * as mongoose from 'mongoose';
 import { ApiError } from './types';
 
 const port: string = process.env.PORT || '8000';
@@ -11,6 +11,7 @@ mongoose.connect(
   process.env.DB_STRING,
   { useNewUrlParser: true }
 );
+mongoose.set('useCreateIndex', true);
 
 api.listen(port, (err: Error) => {
   if (err) {
@@ -19,9 +20,9 @@ api.listen(port, (err: Error) => {
   }
 
   const db = mongoose.connection;
-  db.once("open", () => {
+  db.once('open', () => {
     const modelFilenames: string[] = readdirSync(
-      path.join(__dirname, "models")
+      path.join(__dirname, 'models')
     );
     modelFilenames.map(
       (file: string): void => {
@@ -29,7 +30,7 @@ api.listen(port, (err: Error) => {
       }
     );
     const routesFilenames: string[] = readdirSync(
-      path.join(__dirname, "routes")
+      path.join(__dirname, 'routes')
     );
     routesFilenames.map(
       (file: string): void => {
@@ -38,7 +39,7 @@ api.listen(port, (err: Error) => {
     );
     console.log(`server is listening on ${port}`);
   });
-  db.on("error", e => {
+  db.on('error', e => {
     console.log(e);
   });
 });
