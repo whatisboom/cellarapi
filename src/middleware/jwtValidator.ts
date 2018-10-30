@@ -1,7 +1,7 @@
 import * as jwt from 'express-jwt';
-import { Request, Response, NextFunction } from 'express';
+import { Request, RequestHandler, Response, NextFunction } from 'express';
 
-export const jwtValidator = jwt({
+export const jwtValidator: RequestHandler = jwt({
   secret: process.env.JWT_SECRET
 }).unless({
   path: [
@@ -14,7 +14,7 @@ export function jwtErrorHandler(
   req: Request,
   res: Response,
   next: NextFunction
-) {
+): void {
   if (err.name === 'UnauthorizedError') {
     res.status(401).json({
       error: 'invalid-jwt'

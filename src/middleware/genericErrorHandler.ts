@@ -6,7 +6,7 @@ export function genericErrorHandler(
   req: Request,
   res: Response,
   next: NextFunction
-) {
+): void {
   if (!res.headersSent) {
     error.status = error.status || 500;
     res.status(error.status).json({
