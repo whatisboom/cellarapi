@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../types';
+import { ApiError } from '../errors';
 
 export function genericErrorHandler(
   error: ApiError,

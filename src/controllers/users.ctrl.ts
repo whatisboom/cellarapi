@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import UserModel, { IUserModel } from '../models/user.model';
 import { IQuantityModel, OwnedModel } from '../models/quantity.model';
-import { ApiError } from '../types';
+import { ApiError } from '../errors';
 import BeerModel, { IBeerModel } from '../models/beer.model';
 
 const excludeFields = '-hash -salt';
@@ -42,7 +42,7 @@ export class UsersCtrl {
         })
         .exec();
       if (user === null) {
-        const e: ApiError = <ApiError>new Error('not-found');
+        const e: ApiError = new ApiError('not-found');
         e.status = 404;
         throw e;
       } else {
@@ -72,7 +72,7 @@ export class UsersCtrl {
         }
       ).exec();
       if (user === null) {
-        const e: ApiError = <ApiError>new Error('not-found');
+        const e: ApiError = new ApiError('not-found');
         e.status = 404;
         throw e;
       } else {
@@ -95,7 +95,7 @@ export class UsersCtrl {
         req.params.userId
       );
       if (user === null) {
-        const e: ApiError = <ApiError>new Error('not-found');
+        const e: ApiError = new ApiError('not-found');
         e.status = 404;
         throw e;
       } else {
@@ -131,7 +131,7 @@ export class UsersCtrl {
       });
 
       if (userDocument === null || beerDocument === null) {
-        const e: ApiError = <ApiError>new Error('not-found');
+        const e: ApiError = new ApiError('not-found');
         e.status = 404;
         throw e;
       } else {

@@ -1,30 +1,31 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 import * as jsonwebtoken from 'jsonwebtoken';
 import UserModel, { IUserModel } from '../models/user.model';
 import * as bcrypt from 'bcryptjs';
-import { ApiError } from '../types';
+import { ApiError } from '../errors';
 
 const excludeFields: string[] = ['hash', 'salt'];
 
 export class AuthCtrl {
-  public async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const {
-      email,
-      password,
-      username
-    } = req.body;
+  public async signup(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const { email, password, username } = req.body;
     try {
       const existingUser: IUserModel = await UserModel.findOne({
         $or: [
           {
             username
-          }, {
+          },
+          {
             email
           }
         ]
       });
       if (existingUser) {
-        const e: ApiError = <ApiError>new Error('duplicate-user');
+        const e: ApiError = new ApiError('duplicate-user');
         e.status = 409;
         throw e;
       }
@@ -45,55 +46,59 @@ export class AuthCtrl {
         user
       });
     } catch (e) {
-      return next(e)
+      return next(e);
     }
   }
-  
-  public async signin(req: Request, res:Response, next: NextFunction): Promise<void> {
-    const {
-      username,
-      password,
-      forever
-    } = req.body;
-    
+
+  public async signin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const { username, password, forever } = req.body;
+
     const jwtOptions: jsonwebtoken.SignOptions = {};
 
     if (!forever) {
       jwtOptions.expiresIn = '1d';
     }
-  
-    try {
 
-      const user = await UserModel.findOne({
-        username
-      }, 'username _id salt hash role');
-  
+    try {
+      const user = await UserModel.findOne(
+        {
+          username
+        },
+        'username _id salt hash role'
+      );
+
       const isValidPassword = user.schema.methods.isPasswordValid(
-        password, user
+        password,
+        user
       );
 
       if (isValidPassword) {
-
-        const token = jsonwebtoken.sign({
-          _id: user.get('_id'),
-          username: user.get('username'),
-          role: user.get('role')
-        }, process.env.JWT_SECRET, jwtOptions);
+        const token = jsonwebtoken.sign(
+          {
+            _id: user.get('_id'),
+            username: user.get('username'),
+            role: user.get('role')
+          },
+          process.env.JWT_SECRET,
+          jwtOptions
+        );
 
         res.json({
           token
         });
-
       } else {
-        const e: ApiError = <ApiError>new Error('invalid-auth')
+        const e: ApiError = new ApiError('invalid-auth');
         e.status = 401;
         throw e;
       }
     } catch (e) {
       next(e);
     }
-    
-  }  
+  }
 }
 
 export default new AuthCtrl();
