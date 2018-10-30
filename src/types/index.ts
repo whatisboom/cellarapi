@@ -3,3 +3,4 @@ export * from './beer';
 export * from './user';
 export * from './brewery';
 export * from './apiError';
+export * from './quantity';

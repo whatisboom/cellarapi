@@ -1,17 +1,16 @@
-import {
-  Request,
-  Response,
-  NextFunction
-} from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-import {
-  ApiError
-} from '../types';
+import { ApiError } from '../types';
 
-export function allowOwnProfile(e: ApiError, req: Request, res:Response, next: NextFunction) {
+export function allowOwnProfile(
+  e: ApiError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const userResourcePattern = /^\/users/;
   if (
-    req.method === 'PUT' &&
-    req.route.path === '/users/:userId' &&
+    userResourcePattern.test(req.route.path) &&
     req.params.userId === req.user._id
   ) {
     return next();

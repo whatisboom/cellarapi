@@ -1,10 +1,8 @@
-import {
-  IBrewery
-} from './index';
+import { IBrewery } from './index';
 
-export interface IBeer{
+export interface IBeer {
   _id: any;
   name?: string;
   abv?: number;
-  brewery?: Array<string | IBrewery>;
+  brewery?: string | IBrewery;
 }

@@ -1,19 +1,21 @@
-import { Document, Model, model, Schema } from "mongoose";
+import { Document, Model, model, Schema } from 'mongoose';
 import { IBeer } from '../types';
 
-export interface IBeerModel extends IBeer, Document {
-}
+export interface IBeerModel extends IBeer, Document {}
 
-const BeerSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  abv: Number,
-  style: String,
-  brewery: { type: Schema.Types.ObjectId, ref: 'brewery' },
-  createdAt: Date,
-  updatedAt: Date,
-}, {
-  versionKey: false
-});
+const BeerSchema: Schema = new Schema(
+  {
+    name: { type: String, required: true },
+    abv: Number,
+    style: String,
+    brewery: { type: Schema.Types.ObjectId, ref: 'brewery' },
+    createdAt: Date,
+    updatedAt: Date
+  },
+  {
+    versionKey: false
+  }
+);
 
 BeerSchema.pre('save', function(next) {
   this.set('createdAt', new Date());

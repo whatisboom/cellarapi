@@ -1,14 +1,6 @@
-import {
-  Request,
-  Response,
-  NextFunction
-} from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-import {
-  ApiError,
-  IPermissionsMap,
-  IUser
-} from '../types';
+import { ApiError, IPermissionsMap, IUser } from '../types';
 
 export const permissions: IPermissionsMap = {
   admin: {
@@ -28,17 +20,19 @@ export const permissions: IPermissionsMap = {
   }
 };
 
-export function userHasPermission(user: IUser, permission: string, resource: string) {
+export function userHasPermission(
+  user: IUser,
+  permission: string,
+  resource: string
+) {
   return permissions[user.role][resource].indexOf(permission) !== -1;
 }
 
 export function requireRolePermission(resource: string, permission: string) {
   function checkPermissions(req: Request, res: Response, next: NextFunction) {
-    const {
-      user
-    } = req;
+    const { user } = req;
     if (!user) {
-      const e: ApiError = <ApiError>new Error('user-unauthorized');
+      const e: ApiError = <ApiError>new Error('no-jwt');
       e.status = 401;
       return next(e);
     } else if (userHasPermission(user, permission, resource)) {
@@ -49,5 +43,5 @@ export function requireRolePermission(resource: string, permission: string) {
       return next(e);
     }
   }
-  return checkPermissions
+  return checkPermissions;
 }
