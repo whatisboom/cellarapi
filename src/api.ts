@@ -1,12 +1,12 @@
-import * as express from "express";
-import * as cors from "cors";
-import * as compression from "compression";
-import * as jwt from "express-jwt";
-import * as bodyParser from "body-parser";
-
-declare interface CellarError extends Error {
-  status: number;
-};
+import * as express from 'express';
+import * as cors from 'cors';
+import * as compression from 'compression';
+import * as bodyParser from 'body-parser';
+import {
+  genericErrorHandler,
+  jwtErrorHandler,
+  jwtValidator
+} from './middleware';
 
 const api = express();
 
@@ -15,49 +15,8 @@ api.use(compression());
 api.use(bodyParser.urlencoded({ extended: true }));
 api.use(bodyParser.json());
 
-api.use(
-  jwt({
-    secret: process.env.JWT_SECRET
-  }).unless({
-    path: [
-      /auth\/?.*/ // all auth routes
-    ]
-  })
-);
-
-api.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    if (err.name === "UnauthorizedError") {
-      res.status(401).json({
-        error: "invalid-jwt"
-      });
-    }
-    next(err);
-  }
-);
-
-api.use(
-  (
-    error: CellarError,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    if (!res.headersSent) {
-      error.status = error.status || 500;
-      res.status(error.status).json({
-        error
-      });
-    } else {
-      next(error);
-    }
-    
-  }
-); 
+api.use(jwtValidator);
+api.use(jwtErrorHandler);
+api.use(genericErrorHandler);
 
 export default api;
