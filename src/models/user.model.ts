@@ -14,10 +14,12 @@ const UserSchema: Schema = new Schema(
     username: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      minlength: 3
     },
     role: {
       type: String,
+      enum: ['user', 'moderator', 'admin'],
       default: 'user'
     },
     hash: {

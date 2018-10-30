@@ -12,30 +12,34 @@ export class AuthCtrl {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { email, password, username } = req.body;
-    try {
-      const existingUser: IUserModel = await UserModel.findOne({
-        $or: [
-          {
-            username
-          },
-          {
-            email
-          }
-        ]
-      });
-      if (existingUser) {
-        const e: ConflictError = new ConflictError();
-        e.status = 409;
-        throw e;
-      }
-    } catch (e) {
-      return next(e);
-    }
+    const { email, password, role, username, firstName, lastName } = req.body;
+    // try {
+    //   const existingUser: IUserModel = await UserModel.findOne({
+    //     $or: [
+    //       {
+    //         username
+    //       },
+    //       {
+    //         email
+    //       }
+    //     ]
+    //   });
+    //   if (existingUser) {
+    //     const e: ConflictError = new ConflictError();
+    //     e.status = 409;
+    //     throw e;
+    //   }
+    // } catch (e) {
+    //   return next(e);
+    // }
     try {
       const salt = bcrypt.genSaltSync(10);
       const user = await UserModel.create({
-        ...req.body,
+        email,
+        firstName,
+        lastName,
+        role,
+        username,
         hash: UserModel.schema.methods.getPasswordHash(password, salt),
         salt
       });
