@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as jsonwebtoken from 'jsonwebtoken';
 import UserModel, { IUserModel } from '../models/user.model';
 import * as bcrypt from 'bcryptjs';
-import { ApiError } from '../errors';
+import { ApiError, ConflictError } from '../errors';
 
 const excludeFields: string[] = ['hash', 'salt'];
 
@@ -25,7 +25,7 @@ export class AuthCtrl {
         ]
       });
       if (existingUser) {
-        const e: ApiError = new ApiError('duplicate-user');
+        const e: ConflictError = new ConflictError();
         e.status = 409;
         throw e;
       }

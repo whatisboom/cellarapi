@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { ApiError } from '../errors';
+import { UnauthorizedError } from '../errors';
 import { IPermissionsMap, IUser } from '../types';
 
 export const permissions: IPermissionsMap = {
@@ -33,13 +33,13 @@ export function requireRolePermission(resource: string, permission: string) {
   function checkPermissions(req: Request, res: Response, next: NextFunction) {
     const { user } = req;
     if (!user) {
-      const e: ApiError = new ApiError('no-jwt');
+      const e: UnauthorizedError = new UnauthorizedError();
       e.status = 401;
       return next(e);
     } else if (userHasPermission(user, permission, resource)) {
       return next();
     } else {
-      const e: ApiError = new ApiError('user-unauthorized');
+      const e: UnauthorizedError = new UnauthorizedError();
       e.status = 401;
       return next(e);
     }
