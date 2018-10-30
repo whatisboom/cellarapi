@@ -7,7 +7,8 @@ const QuantitySchema: Schema = new Schema(
   {
     amount: {
       type: Number,
-      required: true
+      required: true,
+      min: 0
     },
     beer: {
       type: Schema.Types.ObjectId,
