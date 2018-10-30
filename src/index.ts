@@ -2,6 +2,7 @@ import { readdirSync } from 'fs';
 import * as path from 'path';
 import api from './api';
 import * as mongoose from 'mongoose';
+import { genericErrorHandler, validationErrorHandler } from './middleware';
 
 const port: string = process.env.PORT || '8000';
 
@@ -36,6 +37,8 @@ api.listen(port, (err: Error) => {
       }
     );
     console.log(`server is listening on ${port}`);
+    api.use(validationErrorHandler);
+    api.use(genericErrorHandler);
   });
   db.on('error', e => {
     console.log(e);
