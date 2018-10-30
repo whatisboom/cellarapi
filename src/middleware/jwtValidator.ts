@@ -5,7 +5,7 @@ export const jwtValidator: RequestHandler = jwt({
   secret: process.env.JWT_SECRET
 }).unless({
   path: [
-    /auth\/?.*/ // all auth routes
+    /auth\/sign/ // all auth routes
   ]
 });
 

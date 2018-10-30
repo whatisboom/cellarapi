@@ -2,40 +2,33 @@ import { Request, Response, NextFunction } from 'express';
 import * as jsonwebtoken from 'jsonwebtoken';
 import UserModel, { IUserModel } from '../models/user.model';
 import * as bcrypt from 'bcryptjs';
-import { ApiError, ConflictError } from '../errors';
+import { ApiError } from '../errors';
+import RefreshTokenModel, {
+  IRefreshTokenModel
+} from '../models/refresh-token.model';
 
 const excludeFields: string[] = ['hash', 'salt'];
 
 export class AuthCtrl {
+  constructor() {
+    this.signin = this.signin.bind(this);
+    this.getAccessToken = this.getAccessToken.bind(this);
+    this.getOrCreateRefreshToken = this.getOrCreateRefreshToken.bind(this);
+  }
   public async signup(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { email, password, username } = req.body;
-    try {
-      const existingUser: IUserModel = await UserModel.findOne({
-        $or: [
-          {
-            username
-          },
-          {
-            email
-          }
-        ]
-      });
-      if (existingUser) {
-        const e: ConflictError = new ConflictError();
-        e.status = 409;
-        throw e;
-      }
-    } catch (e) {
-      return next(e);
-    }
+    const { email, password, role, username, firstName, lastName } = req.body;
     try {
       const salt = bcrypt.genSaltSync(10);
-      const user = await UserModel.create({
-        ...req.body,
+      const user: IUserModel = await UserModel.create({
+        email,
+        firstName,
+        lastName,
+        role,
+        username,
         hash: UserModel.schema.methods.getPasswordHash(password, salt),
         salt
       });
@@ -55,39 +48,29 @@ export class AuthCtrl {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { username, password, forever } = req.body;
-
-    const jwtOptions: jsonwebtoken.SignOptions = {};
-
-    if (!forever) {
-      jwtOptions.expiresIn = '1d';
-    }
+    const { username, password } = req.body;
 
     try {
-      const user = await UserModel.findOne(
+      const user: IUserModel = await UserModel.findOne(
         {
           username
         },
         'username _id salt hash role'
       );
 
-      const isValidPassword = user.schema.methods.isPasswordValid(
+      const isValidPassword: boolean = user.schema.methods.isPasswordValid(
         password,
         user
       );
 
       if (isValidPassword) {
-        const token = jsonwebtoken.sign(
-          {
-            _id: user.get('_id'),
-            username: user.get('username'),
-            role: user.get('role')
-          },
-          process.env.JWT_SECRET,
-          jwtOptions
+        const refreshToken: IRefreshTokenModel = await this.getOrCreateRefreshToken(
+          user._id
         );
+        const token: string = this.getJwtForUser(user);
 
         res.json({
+          refreshToken: refreshToken.get('refreshToken'),
           token
         });
       } else {
@@ -98,6 +81,69 @@ export class AuthCtrl {
     } catch (e) {
       next(e);
     }
+  }
+
+  public async getAccessToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { refreshToken } = req.body;
+      const existingRefreshToken: IRefreshTokenModel = await RefreshTokenModel.findOne(
+        {
+          refreshToken,
+          userId: req.user._id,
+          expires: {
+            $gt: new Date()
+          }
+        }
+      );
+      if (!existingRefreshToken) {
+        const e: ApiError = new ApiError('unauthorized');
+        e.status = 401;
+        throw e;
+      }
+
+      const token = this.getJwtForUser(req.user);
+
+      res.json({
+        token
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  private getJwtForUser(user: IUserModel): string {
+    return jsonwebtoken.sign(
+      {
+        _id: user._id,
+        username: user.username,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d'
+      }
+    );
+  }
+
+  private async getOrCreateRefreshToken(
+    uid: string
+  ): Promise<IRefreshTokenModel> {
+    let token: IRefreshTokenModel = await RefreshTokenModel.findOne({
+      userId: uid,
+      expires: {
+        $gt: new Date()
+      }
+    });
+    if (!token) {
+      token = await RefreshTokenModel.create({
+        userId: uid
+      });
+    }
+    return token;
   }
 }
 
