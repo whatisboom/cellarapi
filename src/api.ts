@@ -3,6 +3,8 @@ import * as cors from 'cors';
 import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
+import * as morgan from 'morgan';
+
 import {
   genericErrorHandler,
   jwtErrorHandler,
@@ -19,14 +21,19 @@ mongoose.connect(
 mongoose.set('useCreateIndex', true);
 
 const db = mongoose.connection;
+
 db.once('open', () => {
   console.log(`database connection open`);
 });
+
 db.on('error', e => {
   console.log(e);
 });
 
 const api = express();
+const loggingFormat =
+  process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
+api.use(morgan(loggingFormat));
 api.use(helmet());
 api.use(cors());
 api.use(compression());

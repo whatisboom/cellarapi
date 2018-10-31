@@ -4,9 +4,7 @@ import { Request, RequestHandler, Response, NextFunction } from 'express';
 export const jwtValidator: RequestHandler = jwt({
   secret: process.env.JWT_SECRET
 }).unless({
-  path: [
-    /auth\/sign/ // all auth routes
-  ]
+  path: ['/auth/signin', '/auth/signup']
 });
 
 export function jwtErrorHandler(
