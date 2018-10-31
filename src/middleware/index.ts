@@ -1,3 +1,4 @@
+export * from './stripFieldsExceptForRoles';
 export * from './allowOwnProfile';
 export * from './checkPermissions';
 export * from './genericErrorHandler';

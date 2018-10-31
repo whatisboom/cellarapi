@@ -1,5 +1,5 @@
 import { Document, Model, model, Schema } from 'mongoose';
-import * as randToken from 'rand-token';
+import * as randomToken from 'rand-token';
 
 export interface IRefreshTokenModel extends Document {}
 
@@ -22,7 +22,7 @@ const RefreshTokenSchema: Schema = new Schema({
 });
 
 RefreshTokenSchema.pre('validate', function(next) {
-  this.set('refreshToken', randToken.uid(256));
+  this.set('refreshToken', randomToken.uid(256));
   const now: Date = new Date();
   this.set('createdAt', now);
   const later: Date = new Date(now.getTime() + 30 * 1000 * 60 * 60 * 24); // 30 days

@@ -2,7 +2,9 @@ import { Document, Model, model, Schema } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { IUser } from '../types';
 
-export interface IUserModel extends IUser, Document {}
+export interface IUserModel extends IUser, Document {
+  [field: string]: any;
+}
 
 const UserSchema: Schema = new Schema(
   {
@@ -20,7 +22,14 @@ const UserSchema: Schema = new Schema(
     role: {
       type: String,
       enum: ['user', 'moderator', 'admin'],
-      default: 'user'
+      default: 'user',
+      validate: {
+        validator: function(val: string): boolean {
+          return /user/i.test(val);
+        },
+        message: (props: { value: string }): string =>
+          `${props.value} is not a valid role.`
+      }
     },
     hash: {
       type: String
