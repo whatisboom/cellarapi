@@ -10,6 +10,22 @@ import {
   validationErrorHandler
 } from './middleware';
 
+import * as mongoose from 'mongoose';
+
+mongoose.connect(
+  process.env.DB_STRING,
+  { useNewUrlParser: true }
+);
+mongoose.set('useCreateIndex', true);
+
+const db = mongoose.connection;
+db.once('open', () => {
+  console.log(`database connection open`);
+});
+db.on('error', e => {
+  console.log(e);
+});
+
 const api = express();
 api.use(helmet());
 api.use(cors());

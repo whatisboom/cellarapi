@@ -1,8 +1,8 @@
+import api from '../../../src/api';
 import * as supertest from 'supertest';
 import AuthCtrl from '../../../src/controllers/auth.ctrl';
 import { IUserModel } from '../../../src/models/user.model';
 import * as rand from 'rand-token';
-const request = supertest('http://localhost:8000');
 
 const hash: string = rand.generate(16);
 const test_user = {
@@ -20,7 +20,7 @@ const jwt: string = AuthCtrl.getJwtForUser(<IUserModel>(<unknown>{
 
 describe('GET /users', () => {
   it('should list users', done => {
-    request
+    supertest(api)
       .get('/users')
       .set('Authorization', `Bearer ${jwt}`)
       .end((err: Error, res: supertest.Response) => {
@@ -35,7 +35,7 @@ describe('GET /users', () => {
 
 describe('GET /users/:userID', () => {
   it('should return a single user', done => {
-    request
+    supertest(api)
       .get(`/users/${user._id}`)
       .set('Authorization', `Bearer ${jwt}`)
       .end((err: Error, res: supertest.Response) => {

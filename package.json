@@ -4,7 +4,6 @@
   "description": "",
   "main": "./src/index.ts",
   "scripts": {
-    "postinstall": "npm run build",
     "start": "node dist/index.js",
     "tdd": "./node_modules/.bin/jest --watchAll",
     "test": "./node_modules/.bin/jest",
@@ -39,6 +38,7 @@
     "@types/jsonwebtoken": "^7.2.8",
     "@types/mongoose": "^5.2.19",
     "@types/node": "^10.11.7",
+    "@types/supertest": "^2.0.6",
     "jest": "^23.6.0",
     "supertest": "^3.3.0",
     "ts-jest": "^23.10.4",

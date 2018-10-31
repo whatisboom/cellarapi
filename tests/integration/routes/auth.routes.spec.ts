@@ -1,3 +1,4 @@
+import api from '../../../src/api';
 import * as supertest from 'supertest';
 import * as rand from 'rand-token';
 import { IUserModel } from '../../../src/models/user.model';
@@ -11,12 +12,12 @@ let test_user = {
   email: `test${hash}@email.com`,
   role: 'user'
 };
-const request = supertest('http://localhost:8000');
+
 let refreshToken: string;
 describe('Auth Routes', () => {
   describe('POST /auth/signup', () => {
     it('should create a user when given a username, email, and password', done => {
-      request
+      supertest(api)
         .post('/auth/signup')
         .send(test_user)
         .set('Accept', 'application/json')
@@ -33,7 +34,7 @@ describe('Auth Routes', () => {
 
   describe('POST /auth/signin', () => {
     it('should return a jwt and a refresh token on login', done => {
-      request
+      supertest(api)
         .post('/auth/signin')
         .send({
           username: test_user.username,
@@ -57,7 +58,7 @@ describe('Auth Routes', () => {
       const jwt: string = AuthCtrl.getJwtForUser(<IUserModel>(
         (<unknown>test_user)
       ));
-      request
+      supertest(api)
         .post('/auth/token')
         .send({
           refreshToken
