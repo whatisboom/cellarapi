@@ -17,7 +17,7 @@ const BeerSchema: Schema = new Schema(
   }
 );
 
-BeerSchema.pre('save', function(next) {
+BeerSchema.pre('validate', function(next) {
   this.set('createdAt', new Date());
   next();
 });

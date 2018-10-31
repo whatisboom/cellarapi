@@ -1,23 +1,25 @@
 import { Document, Model, model, Schema } from 'mongoose';
 import { IBrewery } from '../types';
 
-export interface IBreweryModel extends IBrewery, Document {
-}
+export interface IBreweryModel extends IBrewery, Document {}
 
-const BrewerySchema: Schema = new Schema({
-  name: {
-    type: String,
-    required: true
+const BrewerySchema: Schema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true
+    },
+    city: String,
+    state: String,
+    createdAt: Date,
+    updatedAt: Date
   },
-  city: String,
-  state: String,
-  createdAt: Date,
-  updatedAt: Date
-}, {
-  versionKey: false
-});
+  {
+    versionKey: false
+  }
+);
 
-BrewerySchema.pre('save', function(next) {
+BrewerySchema.pre('validate', function(next) {
   this.set('createdAt', new Date());
   next();
 });
@@ -29,6 +31,9 @@ BrewerySchema.pre('findOneAndUpdate', function(next) {
   next();
 });
 
-const BreweryModel: Model<IBreweryModel> = model<IBreweryModel>('brewery', BrewerySchema);
+const BreweryModel: Model<IBreweryModel> = model<IBreweryModel>(
+  'brewery',
+  BrewerySchema
+);
 
 export default BreweryModel;

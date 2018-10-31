@@ -21,7 +21,7 @@ const RefreshTokenSchema: Schema = new Schema({
   }
 });
 
-RefreshTokenSchema.pre('save', function(next) {
+RefreshTokenSchema.pre('validate', function(next) {
   this.set('refreshToken', randToken.uid(256));
   const now: Date = new Date();
   this.set('createdAt', now);
