@@ -14,6 +14,8 @@ import {
 
 import * as mongoose from 'mongoose';
 
+const ENV = process.env.NODE_ENV;
+
 mongoose.connect(
   process.env.DB_STRING,
   { useNewUrlParser: true }
@@ -24,7 +26,9 @@ mongoose.set('useFindAndModify', false);
 const db = mongoose.connection;
 
 db.once('open', () => {
-  console.log(`database connection open`);
+  if (ENV !== 'test') {
+    console.log(`database connection open`);
+  }
 });
 
 db.on('error', e => {
@@ -32,8 +36,7 @@ db.on('error', e => {
 });
 
 const api = express();
-const loggingFormat =
-  process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
+const loggingFormat = ENV === 'production' ? 'combined' : 'dev';
 api.use(morgan(loggingFormat));
 api.use(helmet());
 api.use(cors());
@@ -54,6 +57,7 @@ require('./models/user.model');
 
 // routes
 require('./routes/auth.routes').default(api);
+require('./routes/base.routes').default(api);
 require('./routes/beers.routes').default(api);
 require('./routes/breweries.routes').default(api);
 require('./routes/users.routes').default(api);
