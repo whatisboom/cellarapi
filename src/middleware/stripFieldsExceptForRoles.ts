@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-
+import { RouterMiddleware } from '../types';
 import { ApiError } from '../errors';
 
-export function stripFieldsExceptForRoles(fields: string[], roles: string[]) {
+export function stripFieldsExceptForRoles(
+  fields: string[],
+  roles: string[]
+): RouterMiddleware {
   function middleware(
     e: ApiError,
     req: Request,

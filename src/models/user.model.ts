@@ -22,10 +22,10 @@ const UserSchema: Schema = new Schema(
       enum: ['user', 'moderator', 'admin'],
       default: 'user',
       validate: {
-        validator: function(val) {
+        validator: function(val): boolean {
           return /user/i.test(val);
         },
-        message: props => `${props.value} is not a valid role.`
+        message: (props): string => `${props.value} is not a valid role.`
       }
     },
     hash: {

@@ -6,7 +6,7 @@ import {
   requireRolePermission
 } from '../middleware';
 
-export default function usersRoutes(api: Router) {
+export default function usersRoutes(api: Router): void {
   api
     .route('/users')
     .get(requireRolePermission('users', 'read'), UsersCtrl.list);
