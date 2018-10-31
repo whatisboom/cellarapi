@@ -2,7 +2,6 @@ import { readdirSync } from 'fs';
 import * as path from 'path';
 import api from './api';
 import * as mongoose from 'mongoose';
-import { genericErrorHandler, validationErrorHandler } from './middleware';
 
 const port: string = process.env.PORT || '8000';
 
@@ -20,27 +19,10 @@ api.listen(port, (err: Error) => {
 
   const db = mongoose.connection;
   db.once('open', () => {
-    const modelFilenames: string[] = readdirSync(
-      path.join(__dirname, 'models')
-    );
-    modelFilenames.map(
-      (file: string): void => {
-        require(`./models/${file}`);
-      }
-    );
-    const routesFilenames: string[] = readdirSync(
-      path.join(__dirname, 'routes')
-    );
-    routesFilenames.map(
-      (file: string): void => {
-        require(`./routes/${file}`).default(api);
-      }
-    );
-    console.log(`server is listening on ${port}`);
-    api.use(validationErrorHandler);
-    api.use(genericErrorHandler);
+    console.log(`database connection open`);
   });
   db.on('error', e => {
     console.log(e);
   });
+  console.log(`server is listening on ${port}`);
 });
