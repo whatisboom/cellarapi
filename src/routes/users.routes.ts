@@ -2,7 +2,7 @@ import { Router } from 'express';
 import UsersCtrl from '../controllers/users.ctrl';
 import { requireRolePermission, allowOwnProfile } from '../middleware';
 
-export default function usersRoutes(api: Router) {
+export default function usersRoutes(api: Router): void {
   api
     .route('/users')
     .get(requireRolePermission('users', 'read'), UsersCtrl.list);
