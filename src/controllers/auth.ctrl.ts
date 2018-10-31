@@ -49,7 +49,6 @@ export class AuthCtrl {
     next: NextFunction
   ): Promise<void> {
     const { username, password } = req.body;
-
     try {
       const user: IUserModel = await UserModel.findOne(
         {
@@ -115,7 +114,7 @@ export class AuthCtrl {
     }
   }
 
-  private getJwtForUser(user: IUserModel): string {
+  public getJwtForUser(user: IUserModel): string {
     return jsonwebtoken.sign(
       {
         _id: user._id,
