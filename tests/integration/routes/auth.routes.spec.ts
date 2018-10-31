@@ -22,7 +22,7 @@ describe('Auth Routes', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .expect(200)
-        .end((err, response) => {
+        .end((err: Error, response: supertest.Response) => {
           if (err) done(err);
           expect(response.body.user.username).toEqual(test_user.username);
           test_user._id = response.body.user._id;
@@ -42,7 +42,7 @@ describe('Auth Routes', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .expect(200)
-        .end((err, response) => {
+        .end((err: Error, response: supertest.Response) => {
           if (err) done(err);
           expect(response.body.token).toBeDefined();
           expect(response.body.refreshToken).toBeDefined();
@@ -63,9 +63,9 @@ describe('Auth Routes', () => {
           refreshToken
         })
         .set('Authorization', `Bearer ${jwt}`)
-        .end((err, res) => {
+        .end((err: Error, res: supertest.Response) => {
           if (err) done(err);
-          expect(res.statusCode).toEqual(200);
+          expect(res.status).toEqual(200);
           expect(res.body.token).toBeDefined();
           done();
         });

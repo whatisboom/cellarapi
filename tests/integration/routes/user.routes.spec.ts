@@ -23,9 +23,9 @@ describe('GET /users', () => {
     request
       .get('/users')
       .set('Authorization', `Bearer ${jwt}`)
-      .end((err, res) => {
+      .end((err: Error, res: supertest.Response) => {
         if (err) done(err);
-        expect(res.statusCode).toEqual(200);
+        expect(res.status).toEqual(200);
         expect(res.body.users.length).toBeGreaterThan(0);
         user = res.body.users[0];
         done();
@@ -38,9 +38,9 @@ describe('GET /users/:userID', () => {
     request
       .get(`/users/${user._id}`)
       .set('Authorization', `Bearer ${jwt}`)
-      .end((err, res) => {
+      .end((err: Error, res: supertest.Response) => {
         if (err) done(err);
-        expect(res.statusCode).toEqual(200);
+        expect(res.status).toEqual(200);
         expect(res.body.user.username).toEqual(user.username);
         done();
       });
