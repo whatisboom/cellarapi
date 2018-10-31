@@ -13,7 +13,7 @@ const test_user = {
 };
 
 let user: IUserModel;
-const jwt: string = AuthCtrl.getJwtForUser(<IUserModel>(<unknown>{
+let jwt: string = AuthCtrl.getJwtForUser(<IUserModel>(<unknown>{
   ...test_user,
   _id: 'abcdefghijklmnopqrstuvwx'
 }));
@@ -35,8 +35,24 @@ describe('GET /users', () => {
 
 describe('GET /users/:userID', () => {
   it('should return a single user', done => {
+    jwt = AuthCtrl.getJwtForUser(user);
     supertest(api)
       .get(`/users/${user._id}`)
+      .set('Authorization', `Bearer ${jwt}`)
+      .end((err: Error, res: supertest.Response) => {
+        if (err) done(err);
+        expect(res.status).toEqual(200);
+        expect(res.body.user.username).toEqual(user.username);
+        done();
+      });
+  });
+});
+
+describe('GET /users/me', () => {
+  it('should return a single user', done => {
+    jwt = AuthCtrl.getJwtForUser(user);
+    supertest(api)
+      .get('/users/me')
       .set('Authorization', `Bearer ${jwt}`)
       .end((err: Error, res: supertest.Response) => {
         if (err) done(err);

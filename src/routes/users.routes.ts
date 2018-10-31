@@ -8,6 +8,10 @@ export default function usersRoutes(api: Router) {
     .get(requireRolePermission('users', 'read'), UsersCtrl.list);
 
   api
+    .route('/users/me')
+    .get(requireRolePermission('users', 'read'), UsersCtrl.getOwnProfile);
+
+  api
     .route('/users/:userId')
     .get(requireRolePermission('users', 'read'), UsersCtrl.get)
     .put(
