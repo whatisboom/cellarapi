@@ -3,6 +3,7 @@ import UserModel, { IUserModel } from '../models/user.model';
 import { IQuantityModel, OwnedModel } from '../models/quantity.model';
 import { ApiError } from '../errors';
 import BeerModel, { IBeerModel } from '../models/beer.model';
+import { IUser } from '../types';
 
 const excludeFields = '-hash -salt';
 
@@ -100,6 +101,26 @@ export class UsersCtrl {
         throw e;
       } else {
         res.sendStatus(204);
+      }
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  public async getOwnProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: IUserModel = await UserModel.findById(
+        req.user._id,
+        excludeFields
+      );
+      if (user === null) {
+        const e: ApiError = new ApiError('not-found');
+        e.status = 404;
+        throw e;
+      } else {
+        res.status(200).json({
+          user
+        });
       }
     } catch (e) {
       return next(e);
