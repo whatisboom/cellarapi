@@ -28,7 +28,7 @@ const QuantitySchema: Schema = new Schema(
   }
 );
 
-QuantitySchema.pre('save', function(next) {
+QuantitySchema.pre('validate', function(next) {
   this.set('createdAt', new Date());
   next();
 });

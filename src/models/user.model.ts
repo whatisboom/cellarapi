@@ -59,7 +59,7 @@ UserSchema.methods.isPasswordValid = function(
   return bcrypt.compareSync(password, user.get('hash'));
 };
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('validate', function(next) {
   this.set('createdAt', new Date());
   next();
 });
