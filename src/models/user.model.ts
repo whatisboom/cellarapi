@@ -20,7 +20,13 @@ const UserSchema: Schema = new Schema(
     role: {
       type: String,
       enum: ['user', 'moderator', 'admin'],
-      default: 'user'
+      default: 'user',
+      validate: {
+        validator: function(val) {
+          return /user/i.test(val);
+        },
+        message: props => `${props.value} is not a valid role.`
+      }
     },
     hash: {
       type: String

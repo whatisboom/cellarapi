@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import UsersCtrl from '../controllers/users.ctrl';
-import { requireRolePermission, allowOwnProfile } from '../middleware';
+import {
+  stripFieldsExceptForRoles,
+  allowOwnProfile,
+  requireRolePermission
+} from '../middleware';
 
 export default function usersRoutes(api: Router) {
   api
@@ -12,6 +16,7 @@ export default function usersRoutes(api: Router) {
     .get(requireRolePermission('users', 'read'), UsersCtrl.get)
     .put(
       requireRolePermission('users', 'update'),
+      stripFieldsExceptForRoles(['role'], ['admin']),
       allowOwnProfile,
       UsersCtrl.put
     )
