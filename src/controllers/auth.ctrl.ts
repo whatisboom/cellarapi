@@ -32,7 +32,7 @@ export class AuthCtrl {
         hash: UserModel.schema.methods.getPasswordHash(password, salt),
         salt
       });
-      excludeFields.forEach(field => {
+      excludeFields.forEach((field: string) => {
         user[field] = undefined;
       });
       res.json({
