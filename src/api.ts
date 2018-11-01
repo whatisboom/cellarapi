@@ -16,6 +16,10 @@ import * as mongoose from 'mongoose';
 
 const ENV = process.env.NODE_ENV;
 
+if (ENV !== 'production' && ENV !== 'staging') {
+  require('dotenv').config();
+}
+
 mongoose.connect(
   process.env.DB_STRING,
   { useNewUrlParser: true }
