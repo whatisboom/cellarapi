@@ -4,7 +4,8 @@ import api from './api';
 
 const port: string = process.env.PORT || '8000';
 
-if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'ci') {
+const ENV = process.env.NODE_ENV;
+if (ENV !== 'test' && ENV !== 'ci') {
   api.listen(port, (err: Error) => {
     if (err) {
       console.log(err);
