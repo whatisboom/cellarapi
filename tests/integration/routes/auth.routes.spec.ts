@@ -1,7 +1,8 @@
 import api from '../../../src/api';
 import * as supertest from 'supertest';
 import * as rand from 'rand-token';
-import { IUserModel } from '../../../src/models/user.model';
+import UserModel, { IUserModel } from '../../../src/models/user.model';
+import RefreshTokenModel from '../../../src/models/refresh-token.model';
 import AuthCtrl from '../../../src/controllers/auth.ctrl';
 
 const hash = rand.generate(16);
@@ -54,7 +55,7 @@ describe('Auth Routes', () => {
   });
 
   describe('POST /auth/token', () => {
-    it('should return a access token', done => {
+    it('should return a access token', async done => {
       const jwt: string = AuthCtrl.getJwtForUser(<IUserModel>(
         (<unknown>test_user)
       ));
@@ -70,6 +71,8 @@ describe('Auth Routes', () => {
           expect(res.body.token).toBeDefined();
           done();
         });
+      await UserModel.deleteMany({});
+      await RefreshTokenModel.deleteMany({});
     });
   });
 });

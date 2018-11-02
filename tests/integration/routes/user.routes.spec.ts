@@ -86,7 +86,7 @@ describe('Users Routes', () => {
         .put(`/users/123`)
         .set('Authorization', `Bearer ${jwt}`)
         .send({
-          username: 'NEW NAME'
+          username: '404 Username'
         })
         .expect(404)
         .end((err: Error, response: supertest.Response) => {
