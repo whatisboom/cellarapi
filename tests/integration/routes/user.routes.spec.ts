@@ -3,6 +3,7 @@ import * as supertest from 'supertest';
 import { getValidJwt, test_user } from '../../utils';
 
 const jwt: string = getValidJwt();
+
 describe('Users Routes', () => {
   describe('POST /users', () => {
     it('should create a user', done => {

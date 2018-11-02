@@ -89,6 +89,7 @@ export class AuthCtrl {
   ): Promise<void> {
     try {
       const { refreshToken } = req.body;
+      console.log(req.user);
       const existingRefreshToken: IRefreshTokenModel = await RefreshTokenModel.findOne(
         {
           refreshToken,

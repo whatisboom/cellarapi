@@ -64,8 +64,6 @@ describe('Auth Routes', () => {
           await RefreshTokenModel.deleteMany({});
           done();
         });
-      await UserModel.deleteMany({});
-      await RefreshTokenModel.deleteMany({});
     });
   });
 });
