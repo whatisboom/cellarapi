@@ -32,11 +32,7 @@ export function userHasPermission(
 export function requireRolePermission(resource: string, permission: string) {
   function checkPermissions(req: Request, res: Response, next: NextFunction) {
     const { user } = req;
-    if (!user) {
-      const e: UnauthorizedError = new UnauthorizedError();
-      e.status = 401;
-      return next(e);
-    } else if (userHasPermission(user, permission, resource)) {
+    if (user && userHasPermission(user, permission, resource)) {
       return next();
     } else {
       const e: UnauthorizedError = new UnauthorizedError();
