@@ -59,7 +59,9 @@ describe('Users Routes', () => {
         .expect(200)
         .end((err: Error, res: supertest.Response) => {
           if (err) done(err);
+          expect(res.body).toHaveProperty('user');
           expect(res.body.user.username).toEqual(test_user.username);
+          test_user._id = res.body.user._id;
           done();
         });
     });
