@@ -11,6 +11,7 @@ const BrewerySchema: Schema = new Schema(
     },
     city: String,
     state: String,
+    country: String,
     createdAt: Date,
     updatedAt: Date
   },

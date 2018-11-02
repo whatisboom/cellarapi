@@ -1,5 +1,8 @@
 export interface IBrewery {
   _id: any;
   name?: string;
-  updatedAt: Date;
+  city?: string;
+  state?: string;
+  country?: string;
+  updatedAt?: Date;
 }

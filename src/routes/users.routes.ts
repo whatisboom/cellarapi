@@ -9,7 +9,8 @@ import {
 export default function usersRoutes(api: Router): void {
   api
     .route('/users')
-    .get(requireRolePermission('users', 'read'), UsersCtrl.list);
+    .get(requireRolePermission('users', 'read'), UsersCtrl.list)
+    .post(requireRolePermission('users', 'create'), UsersCtrl.post);
 
   api
     .route('/users/me')

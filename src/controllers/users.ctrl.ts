@@ -3,11 +3,13 @@ import UserModel, { IUserModel } from '../models/user.model';
 import { IQuantityModel, OwnedModel } from '../models/quantity.model';
 import { ApiError } from '../errors';
 import BeerModel, { IBeerModel } from '../models/beer.model';
-import { IUser } from '../types';
+import AuthCtrl from './auth.ctrl';
 
 const excludeFields = '-hash -salt';
 
 export class UsersCtrl {
+  public post = AuthCtrl.signup; // duplicating method
+
   public async list(
     req: Request,
     res: Response,

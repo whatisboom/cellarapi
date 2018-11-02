@@ -29,12 +29,6 @@ mongoose.set('useFindAndModify', false);
 
 const db = mongoose.connection;
 
-db.once('open', () => {
-  if (ENV !== 'test') {
-    console.log(`database connection open`);
-  }
-});
-
 db.on('error', e => {
   console.log(e);
 });
