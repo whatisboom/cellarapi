@@ -89,6 +89,7 @@ export class AuthCtrl {
   ): Promise<void> {
     try {
       const { refreshToken } = req.body;
+      console.log(req.user);
       const existingRefreshToken: IRefreshTokenModel = await RefreshTokenModel.findOne(
         {
           refreshToken,
@@ -98,7 +99,8 @@ export class AuthCtrl {
           }
         }
       );
-      if (!existingRefreshToken) {
+
+      if (existingRefreshToken === null) {
         const e: ApiError = new ApiError('unauthorized');
         e.status = 401;
         throw e;
