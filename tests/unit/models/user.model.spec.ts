@@ -7,7 +7,7 @@ describe('UserModel', () => {
       const user: IUserModel = new UserModel();
       await user.validate();
     } catch (e) {
-      expect(e.errors).toBeDefined();
+      expect(e).toHaveProperty('errors');
       expect(Object.keys(e.errors).length).toEqual(2);
       expect(e.errors.email).toBeDefined();
       expect(e.errors.username).toBeDefined();
@@ -44,6 +44,25 @@ describe('UserModel', () => {
         expect(user.get('updatedAt')).toBeDefined();
       }
     );
+  });
+
+  it('should validate role properly', async done => {
+    try {
+      const user: IUserModel = await UserModel.create({
+        email: 'test@email.com',
+        username: 'test_user',
+        role: 'wizard'
+      });
+    } catch (e) {
+      expect(e).toHaveProperty('errors');
+      expect(e.errors).toHaveProperty('role');
+      expect(e.errors.role.name).toEqual('ValidatorError');
+      expect(e.errors.role.message).toEqual(
+        '`wizard` is not a valid enum value for path `role`.'
+      );
+    } finally {
+      done();
+    }
   });
 
   describe('schema', () => {

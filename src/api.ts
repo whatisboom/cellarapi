@@ -29,18 +29,12 @@ mongoose.set('useFindAndModify', false);
 
 const db = mongoose.connection;
 
-db.once('open', () => {
-  if (ENV !== 'test') {
-    console.log(`database connection open`);
-  }
-});
-
 db.on('error', e => {
   console.log(e);
 });
 
-const api = express();
-const loggingFormat = ENV === 'production' ? 'combined' : 'dev';
+const api: express.Application = express();
+const loggingFormat: string = ENV === 'production' ? 'combined' : 'dev';
 api.use(morgan(loggingFormat));
 api.use(helmet());
 api.use(cors());

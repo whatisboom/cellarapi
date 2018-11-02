@@ -1,15 +1,15 @@
 import BeerModel, { IBeerModel } from '../../../src/models/beer.model';
 
-describe('UserModel', () => {
+describe('BeerModel', () => {
   it('should throw an error when name is missing', async done => {
     try {
       const user: IBeerModel = new BeerModel();
       await user.validate();
     } catch (e) {
-      expect(e.errors).toBeDefined();
+      expect(e).toHaveProperty('errors');
       expect(Object.keys(e.errors).length).toEqual(1);
-      expect(e.errors.name.message).toEqual('Path `name` is required.')
-      expect(e.errors.name.kind).toEqual('required')
+      expect(e.errors.name.message).toEqual('Path `name` is required.');
+      expect(e.errors.name.kind).toEqual('required');
     } finally {
       done();
     }

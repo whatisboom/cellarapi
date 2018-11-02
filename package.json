@@ -11,6 +11,7 @@
     "clean": "rm -rf ./dist/ && mkdir dist",
     "dev": "npm run clean && ./node_modules/.bin/tsc -w",
     "build": "npm run clean && ./node_modules/.bin/tsc",
+    "serve": "nodemon dist/index.js --trace-sync-io",
     "tsc": "tsc",
     "ip": "curl http://169.254.169.254/latest/meta-data/public-ipv4"
   },
@@ -28,7 +29,8 @@
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.3.3",
     "morgan": "^1.9.1",
-    "rand-token": "^0.4.0"
+    "rand-token": "^0.4.0",
+    "superagent-defaults": "^0.1.14"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

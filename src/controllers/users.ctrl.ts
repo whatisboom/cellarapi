@@ -3,11 +3,13 @@ import UserModel, { IUserModel } from '../models/user.model';
 import { IQuantityModel, OwnedModel } from '../models/quantity.model';
 import { ApiError } from '../errors';
 import BeerModel, { IBeerModel } from '../models/beer.model';
-import { IUser } from '../types';
+import AuthCtrl from './auth.ctrl';
 
 const excludeFields = '-hash -salt';
 
 export class UsersCtrl {
+  public post = AuthCtrl.signup; // duplicating method
+
   public async list(
     req: Request,
     res: Response,
@@ -133,16 +135,16 @@ export class UsersCtrl {
     next: NextFunction
   ): Promise<void> {
     try {
-      const quantityDocument: IQuantityModel = req.body;
+      const userId = req.params.userId;
 
       // no destructuring since i'm using
       // beerId for clarity/readability
-      const amount = quantityDocument.amount;
-      const beerId = quantityDocument.beer;
+      const amount = req.body.amount;
+      const beerId = req.body.beer;
 
       const userDocument: IUserModel = await UserModel.findOne(
         {
-          _id: req.params.userId
+          _id: userId
         },
         excludeFields
       );
@@ -157,7 +159,7 @@ export class UsersCtrl {
         throw e;
       } else {
         // if user and beer documents exist
-        // try to get the owned beer quantity
+        // try to get/update the owned beer quantity
         let ownedBeer: IQuantityModel = await OwnedModel.findOneAndUpdate(
           {
             beer: beerId,

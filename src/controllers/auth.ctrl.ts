@@ -98,7 +98,8 @@ export class AuthCtrl {
           }
         }
       );
-      if (!existingRefreshToken) {
+
+      if (existingRefreshToken === null) {
         const e: ApiError = new ApiError('unauthorized');
         e.status = 401;
         throw e;
