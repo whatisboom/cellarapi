@@ -45,8 +45,7 @@ export class BeersCtrl {
         .populate('brewery')
         .exec();
       if (beer === null) {
-        const e = new ApiError('not-found');
-        e.status = 404;
+        const e: ApiError = new ApiError('not-found', 404);
         throw e;
       } else {
         res.json({

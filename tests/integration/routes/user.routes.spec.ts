@@ -4,8 +4,8 @@ import { getValidJwt, test_user } from '../../utils';
 import { OwnedModel } from '../../../src/models/quantity.model';
 import BeerModel from '../../../src/models/beer.model';
 
-const jwt: string = getValidJwt();
-
+let jwt: string = getValidJwt();
+let user: any = {};
 describe('Users Routes', () => {
   describe('POST /users', () => {
     it('should create a user', async done => {
@@ -17,7 +17,9 @@ describe('Users Routes', () => {
           .expect(200);
         expect(response.body).toHaveProperty('user');
         expect(response.body.user.username).toEqual(test_user.username);
-        test_user._id = response.body.user._id;
+        user = response.body.user;
+        test_user._id = user._id;
+        jwt = getValidJwt(response.body.user);
         done();
       } catch (e) {
         done(e);
@@ -44,11 +46,11 @@ describe('Users Routes', () => {
     it('should return a single user', async done => {
       try {
         const response: supertest.Response = await supertest(api)
-          .get(`/users/${test_user._id}`)
+          .get(`/users/${user._id}`)
           .set('Authorization', `Bearer ${jwt}`)
           .expect(200);
         expect(response.body).toHaveProperty('user');
-        expect(response.body.user.username).toEqual(test_user.username);
+        expect(response.body.user.username).toEqual(user.username);
         done();
       } catch (e) {
         done(e);
@@ -57,27 +59,15 @@ describe('Users Routes', () => {
   });
 
   describe('GET /users/me', () => {
-    it('should 404 on unknown user', async done => {
+    it('should return a single user', async done => {
+      // const meJWT = getValidJwt(user);
       try {
         const response: supertest.Response = await supertest(api)
           .get('/users/me')
           .set('Authorization', `Bearer ${jwt}`)
-          .expect(404);
-        expect(response.body).toHaveProperty('error');
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('should return a single user', async done => {
-      const meJWT = getValidJwt(test_user);
-      try {
-        const response: supertest.Response = await supertest(api)
-          .get('/users/me')
-          .set('Authorization', `Bearer ${meJWT}`)
           .expect(200);
         expect(response.body).toHaveProperty('user');
-        expect(response.body.user.username).toEqual(test_user.username);
+        expect(response.body.user.username).toEqual(user.username);
         done();
       } catch (e) {
         done(e);
@@ -89,7 +79,7 @@ describe('Users Routes', () => {
     it('should update the user', async done => {
       try {
         const response: supertest.Response = await supertest(api)
-          .put(`/users/${test_user._id}`)
+          .put(`/users/${user._id}`)
           .set('Authorization', `Bearer ${jwt}`)
           .send({
             username: 'NEW NAME'
@@ -124,7 +114,7 @@ describe('Users Routes', () => {
       const beerId = '1234';
       try {
         const response: supertest.Response = await supertest(api)
-          .post(`/users/${test_user._id}/beers`)
+          .post(`/users/${user._id}/beers`)
           .send({
             beerId
           })
@@ -139,6 +129,13 @@ describe('Users Routes', () => {
     it('should add a beer when it does not exist for the user', async done => {
       // create a beer
       try {
+        const userResponse: supertest.Response = await supertest(api)
+          .get('/users/me')
+          .set('Authorization', `Bearer ${jwt}`)
+          .expect(200);
+
+        expect(userResponse.body).toHaveProperty('user');
+
         const beerResponse: supertest.Response = await supertest(api)
           .post('/beers')
           .send({
@@ -146,20 +143,24 @@ describe('Users Routes', () => {
           })
           .set('Authorization', `Bearer ${jwt}`)
           .expect(200);
+
         expect(beerResponse.body).toHaveProperty('beer');
 
         const beerId = beerResponse.body.beer._id;
-        const userResponse: supertest.Response = await supertest(api)
-          .post(`/users/${test_user._id}/beers`)
+        const addBeerResponse = await supertest(api)
+          .post(`/users/${userResponse.body.user._id}/beers`)
           .set('Authorization', `Bearer ${jwt}`)
           .send({
             beer: beerId,
             amount: 1
-          })
-          .expect(200);
-        expect(userResponse.body).toHaveProperty('user');
-        expect(userResponse.body.user).toHaveProperty('owned');
-        expect(userResponse.body.user.owned).toHaveLength(1);
+          });
+
+        expect(addBeerResponse.body).toHaveProperty('user');
+        expect(addBeerResponse.body.user.username).toEqual(
+          userResponse.body.user.username
+        );
+        expect(addBeerResponse.body.user).toHaveProperty('owned');
+        expect(addBeerResponse.body.user.owned).toHaveLength(1);
         done();
       } catch (e) {
         done(e);
@@ -170,8 +171,14 @@ describe('Users Routes', () => {
   describe('DELETE /users/:userId', () => {
     it('should successfully remove the user', async done => {
       try {
-        const response: supertest.Response = await supertest(api)
-          .delete(`/users/${test_user._id}`)
+        const userResponse: supertest.Response = await supertest(api)
+          .get('/users/me')
+          .set('Authorization', `Bearer ${jwt}`)
+          .expect(200);
+
+        expect(userResponse.body).toHaveProperty('user');
+        const removeResponse: supertest.Response = await supertest(api)
+          .delete(`/users/${userResponse.body.user._id}`)
           .set('Authorization', `Bearer ${jwt}`)
           .expect(204);
         done();

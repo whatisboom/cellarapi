@@ -45,8 +45,7 @@ export class UsersCtrl {
         })
         .exec();
       if (user === null) {
-        const e: ApiError = new ApiError('not-found');
-        e.status = 404;
+        const e: ApiError = new ApiError('not-found', 404);
         throw e;
       } else {
         res.json({
@@ -75,8 +74,7 @@ export class UsersCtrl {
         }
       ).exec();
       if (user === null) {
-        const e: ApiError = new ApiError('not-found');
-        e.status = 404;
+        const e: ApiError = new ApiError('not-found', 404);
         throw e;
       } else {
         res.json({
@@ -98,8 +96,7 @@ export class UsersCtrl {
         req.params.userId
       );
       if (user === null) {
-        const e: ApiError = new ApiError('not-found');
-        e.status = 404;
+        const e: ApiError = new ApiError('not-found', 404);
         throw e;
       } else {
         res.sendStatus(204);
@@ -116,8 +113,7 @@ export class UsersCtrl {
         excludeFields
       );
       if (user === null) {
-        const e: ApiError = new ApiError('not-found');
-        e.status = 404;
+        const e: ApiError = new ApiError('not-found', 404);
         throw e;
       } else {
         res.status(200).json({
@@ -153,13 +149,16 @@ export class UsersCtrl {
         _id: beerId
       });
 
-      if (userDocument === null || beerDocument === null) {
-        const e: ApiError = new ApiError('not-found');
-        e.status = 404;
+      if (userDocument === null) {
+        const e: ApiError = new ApiError('user: not-found', 404);
+        throw e;
+      } else if (beerDocument === null) {
+        const e: ApiError = new ApiError('beer: not-found', 404);
         throw e;
       } else {
         // if user and beer documents exist
         // try to get/update the owned beer quantity
+        // todo: use upsert
         let ownedBeer: IQuantityModel = await OwnedModel.findOneAndUpdate(
           {
             beer: beerId,

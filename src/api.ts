@@ -5,6 +5,12 @@ import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 
+const ENV = process.env.NODE_ENV;
+
+if (ENV !== 'production' && ENV !== 'staging') {
+  require('dotenv').config();
+}
+
 import {
   genericErrorHandler,
   jwtErrorHandler,
@@ -14,20 +20,16 @@ import {
 
 import * as mongoose from 'mongoose';
 
-const ENV = process.env.NODE_ENV;
-
-if (ENV !== 'production' && ENV !== 'staging') {
-  require('dotenv').config();
-}
-
 mongoose.connect(
   process.env.DB_STRING,
-  { useNewUrlParser: true }
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  }
 );
-mongoose.set('useCreateIndex', true);
-mongoose.set('useFindAndModify', false);
 
-const db = mongoose.connection;
+const db: mongoose.Connection = mongoose.connection;
 
 db.on('error', e => {
   console.log(e);
