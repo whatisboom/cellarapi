@@ -11,7 +11,7 @@ const test_beer: IBeerModel = <IBeerModel>{
   style: 'Test Style'
 };
 
-describe('Beer Routes', () => {
+fdescribe('Beer Routes', () => {
   describe('POST /beers', () => {
     it('should create a beer', done => {
       supertest(api)

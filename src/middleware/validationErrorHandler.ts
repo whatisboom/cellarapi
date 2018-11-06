@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { ValidationError } from 'mongoose';
+import { Error } from 'mongoose';
 
-export interface MongoValidationError extends ValidationError {
+export interface MongoValidationError extends Error {
   errors: {
-    [key: string]: ValidationError;
+    [key: string]: Error;
   };
 }
 

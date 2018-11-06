@@ -37,7 +37,9 @@ db.on('error', e => {
 
 const api: express.Application = express();
 const loggingFormat: string = ENV === 'production' ? 'combined' : 'dev';
-api.use(morgan(loggingFormat));
+if (ENV !== 'test') {
+  api.use(morgan(loggingFormat));
+}
 api.use(helmet());
 api.use(cors());
 api.use(compression());
