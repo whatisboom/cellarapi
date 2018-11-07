@@ -55,6 +55,31 @@ export class InventoryCtrl {
     }
   }
 
+  public async updateBeerQuantity(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { amount, beerId, userId } = req.params;
+      const ownedBeer: IQuantityModel = await OwnedModel.findOne({
+        beer: beerId,
+        user: userId
+      });
+      if (ownedBeer === null) {
+        throw new ApiError('not-found: owned', 404);
+      }
+      await ownedBeer.update({
+        amount
+      });
+      res.status(200).json({
+        beer: ownedBeer
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
   public async getUsersBeers(
     req: Request,
     res: Response,

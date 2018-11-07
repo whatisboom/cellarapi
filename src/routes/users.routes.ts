@@ -36,4 +36,11 @@ export default function usersRoutes(api: Router): void {
       allowOwnProfile,
       InventoryCtrl.addBeerToUser
     );
+  api
+    .route('/users/:userId/beers/:beerId')
+    .put(
+      requireRolePermission('users', 'update'),
+      allowOwnProfile,
+      InventoryCtrl.updateBeerQuantity
+    );
 }
