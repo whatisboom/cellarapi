@@ -5,6 +5,12 @@ import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 
+const ENV = process.env.NODE_ENV;
+
+if (ENV !== 'production' && ENV !== 'staging') {
+  require('dotenv').config();
+}
+
 import {
   genericErrorHandler,
   jwtErrorHandler,
@@ -13,29 +19,38 @@ import {
 } from './middleware';
 
 import * as mongoose from 'mongoose';
-
-const ENV = process.env.NODE_ENV;
-
-if (ENV !== 'production' && ENV !== 'staging') {
-  require('dotenv').config();
+import { Mockgoose } from 'mockgoose';
+const mockgoose = new Mockgoose(mongoose);
+if (ENV === 'dev' || ENV === 'test') {
+  (async () => {
+    await mockgoose.prepareStorage();
+  })();
 }
 
 mongoose.connect(
   process.env.DB_STRING,
-  { useNewUrlParser: true }
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  }
 );
-mongoose.set('useCreateIndex', true);
-mongoose.set('useFindAndModify', false);
 
-const db = mongoose.connection;
-
+const db: mongoose.Connection = mongoose.connection;
+db.on('connected', () => {
+  if (mockgoose.helper.isMocked()) {
+    console.log('in memory db is now connected');
+  }
+});
 db.on('error', e => {
   console.log(e);
 });
 
 const api: express.Application = express();
 const loggingFormat: string = ENV === 'production' ? 'combined' : 'dev';
-api.use(morgan(loggingFormat));
+if (ENV !== 'test') {
+  api.use(morgan(loggingFormat));
+}
 api.use(helmet());
 api.use(cors());
 api.use(compression());
@@ -43,7 +58,7 @@ api.use(bodyParser.urlencoded({ extended: true }));
 api.use(bodyParser.json());
 
 // custom middleware
-api.use(jwtValidator);
+api.use(jwtValidator(process.env.JWT_SECRET));
 api.use(jwtErrorHandler);
 
 // models

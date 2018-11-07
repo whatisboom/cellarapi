@@ -45,8 +45,7 @@ export class BreweriesCtrl {
         _id: req.params.breweryId
       }).exec();
       if (brewery === null) {
-        const e = new ApiError('not-found');
-        e.status = 404;
+        const e = new ApiError('not-found', 404);
         throw e;
       } else {
         res.json({
