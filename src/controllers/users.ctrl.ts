@@ -126,6 +126,50 @@ export class UsersCtrl {
       return next(e);
     }
   }
+
+  public async addBeerToUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: IUserModel = await UserModel.findById(
+        req.params.userId,
+        excludeFields
+      ).populate('owned');
+      const beer: IBeerModel = await BeerModel.findById(req.body.beerId);
+      const amount: number = req.body.amount;
+
+      if (user === null) {
+        throw new Error('not-found: user');
+      }
+
+      if (beer === null) {
+        throw new Error('not-found: beer');
+      }
+
+      const ownedBeer: IQuantityModel = await OwnedModel.findOne({
+        beer: beer._id,
+        user: user._id
+      });
+
+      if (ownedBeer !== null) {
+        throw new ApiError('duplicate', 409);
+      }
+
+      const createdBeer: IQuantityModel = await OwnedModel.create({
+        beer: beer._id,
+        user: user._id,
+        amount
+      });
+
+      user.get('owned').push(createdBeer);
+
+      await user.save();
+
+      res.status(200).json({
+        user
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export default new UsersCtrl();
