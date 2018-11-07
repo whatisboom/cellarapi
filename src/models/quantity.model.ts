@@ -15,7 +15,7 @@ const QuantitySchema: Schema = new Schema(
       ref: 'beer',
       required: true
     },
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'user',
       required: true

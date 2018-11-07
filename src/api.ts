@@ -21,7 +21,7 @@ import {
 import * as mongoose from 'mongoose';
 import { Mockgoose } from 'mockgoose';
 const mockgoose = new Mockgoose(mongoose);
-if (ENV === 'dev' || ENV === 'test') {
+if (ENV === 'test') {
   (async () => {
     await mockgoose.prepareStorage();
   })();
@@ -39,7 +39,7 @@ mongoose.connect(
 const db: mongoose.Connection = mongoose.connection;
 db.on('connected', () => {
   if (mockgoose.helper.isMocked()) {
-    console.log('in memory db is now connected');
+    console.log('using in-memory db');
   }
 });
 db.on('error', e => {
