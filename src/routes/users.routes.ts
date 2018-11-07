@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import UsersCtrl from '../controllers/users.ctrl';
+import InventoryCtrl from '../controllers/inventory.ctrl';
+
 import {
   stripFieldsExceptForRoles,
   allowOwnProfile,
@@ -26,5 +28,11 @@ export default function usersRoutes(api: Router): void {
     )
     .delete(requireRolePermission('users', 'delete'), UsersCtrl.remove);
 
-  api.route('/users/:userId/beers').post(UsersCtrl.addBeerToUser);
+  api
+    .route('/users/:userId/beer')
+    .post(
+      requireRolePermission('users', 'update'),
+      allowOwnProfile,
+      InventoryCtrl.addBeerToUser
+    );
 }
