@@ -19,6 +19,13 @@ import {
 } from './middleware';
 
 import * as mongoose from 'mongoose';
+import { Mockgoose } from 'mockgoose';
+const mockgoose = new Mockgoose(mongoose);
+if (ENV === 'dev' || ENV === 'test') {
+  (async () => {
+    await mockgoose.prepareStorage();
+  })();
+}
 
 mongoose.connect(
   process.env.DB_STRING,
@@ -30,7 +37,11 @@ mongoose.connect(
 );
 
 const db: mongoose.Connection = mongoose.connection;
-
+db.on('connected', () => {
+  if (mockgoose.helper.isMocked()) {
+    console.log('in memory db is now connected');
+  }
+});
 db.on('error', e => {
   console.log(e);
 });
@@ -47,7 +58,7 @@ api.use(bodyParser.urlencoded({ extended: true }));
 api.use(bodyParser.json());
 
 // custom middleware
-api.use(jwtValidator);
+api.use(jwtValidator(process.env.JWT_SECRET));
 api.use(jwtErrorHandler);
 
 // models
