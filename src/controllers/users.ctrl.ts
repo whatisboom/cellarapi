@@ -103,7 +103,11 @@ export class UsersCtrl {
     }
   }
 
-  public async getOwnProfile(req: Request, res: Response, next: NextFunction) {
+  public async getOwnProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const user: IUserModel = await UserModel.findById(
         req.user._id,

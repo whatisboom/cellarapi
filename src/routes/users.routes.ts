@@ -29,7 +29,8 @@ export default function usersRoutes(api: Router): void {
     .delete(requireRolePermission('users', 'delete'), UsersCtrl.remove);
 
   api
-    .route('/users/:userId/beer')
+    .route('/users/:userId/beers')
+    .get(requireRolePermission('users', 'read'), InventoryCtrl.getUsersBeers)
     .post(
       requireRolePermission('users', 'update'),
       allowOwnProfile,

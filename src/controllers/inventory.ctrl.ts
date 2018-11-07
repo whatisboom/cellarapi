@@ -7,7 +7,11 @@ import { ApiError } from '../errors';
 const excludeFields = '-hash -salt';
 
 export class InventoryCtrl {
-  public async addBeerToUser(req: Request, res: Response, next: NextFunction) {
+  public async addBeerToUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const user: IUserModel = await UserModel.findById(
         req.params.userId,
@@ -45,6 +49,23 @@ export class InventoryCtrl {
 
       res.status(200).json({
         user
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async getUsersBeers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const ownedBeers: IQuantityModel[] = await OwnedModel.find({
+        user: req.user._id
+      });
+      res.status(200).json({
+        beers: ownedBeers
       });
     } catch (e) {
       next(e);
