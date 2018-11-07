@@ -26,5 +26,5 @@ export default function usersRoutes(api: Router): void {
     )
     .delete(requireRolePermission('users', 'delete'), UsersCtrl.remove);
 
-  //api.route('/users/:userId/beers').post(UsersCtrl.addBeerToUser);
+  api.route('/users/:userId/beers').post(UsersCtrl.addBeerToUser);
 }

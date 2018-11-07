@@ -37,11 +37,11 @@ mongoose.connect(
 );
 
 const db: mongoose.Connection = mongoose.connection;
-db.on('connected', () => {
-  if (mockgoose.helper.isMocked()) {
-    console.log('using in-memory db');
-  }
-});
+// db.on('connected', () => {
+//   if (mockgoose.helper.isMocked()) {
+//     console.log('using in-memory db');
+//   }
+// });
 db.on('error', e => {
   console.log(e);
 });
