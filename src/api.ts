@@ -4,12 +4,15 @@ import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
+import db from './db';
 
 const ENV = process.env.NODE_ENV;
 
 if (ENV !== 'production' && ENV !== 'staging') {
   require('dotenv').config();
 }
+
+db(ENV);
 
 import {
   genericErrorHandler,
