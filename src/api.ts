@@ -4,6 +4,7 @@ import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
+import db from './db';
 
 const ENV = process.env.NODE_ENV;
 
@@ -11,40 +12,14 @@ if (ENV !== 'production' && ENV !== 'staging') {
   require('dotenv').config();
 }
 
+db(ENV);
+
 import {
   genericErrorHandler,
   jwtErrorHandler,
   jwtValidator,
   validationErrorHandler
 } from './middleware';
-
-import * as mongoose from 'mongoose';
-import { Mockgoose } from 'mockgoose';
-const mockgoose = new Mockgoose(mongoose);
-if (ENV === 'test') {
-  (async () => {
-    await mockgoose.prepareStorage();
-  })();
-}
-
-mongoose.connect(
-  process.env.DB_STRING,
-  {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-  }
-);
-
-const db: mongoose.Connection = mongoose.connection;
-// db.on('connected', () => {
-//   if (mockgoose.helper.isMocked()) {
-//     console.log('using in-memory db');
-//   }
-// });
-db.on('error', e => {
-  console.log(e);
-});
 
 const api: express.Application = express();
 const loggingFormat: string = ENV === 'production' ? 'combined' : 'dev';

@@ -1,12 +1,22 @@
 import api from '../../../src/api';
 import * as supertest from 'supertest';
 import { getValidJwt } from '../../utils';
-import { OwnedModel } from '../../../src/models/quantity.model';
-import BeerModel from '../../../src/models/beer.model';
-import UserModel from '../../../src/models/user.model';
+import UserModel, { IUserModel } from '../../../src/models/user.model';
+import * as rand from 'rand-token';
 
+const hash = rand.generate(16);
 let jwt: string = getValidJwt();
-let createdUser: any = {};
+const createdUser: IUserModel = new UserModel({
+  username: hash,
+  email: `${hash}@email.com`,
+  password: 'testpassword'
+});
+createdUser.save();
+jwt = getValidJwt(createdUser);
+
+afterAll(async () => {
+  await UserModel.deleteMany({});
+});
 
 describe('Users Routes', () => {
   describe('Setup: Create user', () => {
@@ -22,8 +32,6 @@ describe('Users Routes', () => {
           .expect(200);
         expect(response.body).toHaveProperty('user');
         expect(response.body.user.username).toEqual('users-testuser');
-        createdUser = response.body.user;
-        jwt = getValidJwt(createdUser);
         done();
       } catch (e) {
         done(e);
@@ -64,7 +72,6 @@ describe('Users Routes', () => {
 
   describe('GET /users/me', () => {
     it('should return a single user', async done => {
-      // const meJWT = getValidJwt(user);
       try {
         const response: supertest.Response = await supertest(api)
           .get('/users/me')
@@ -96,7 +103,7 @@ describe('Users Routes', () => {
         done(e);
       }
     });
-    it('should 401 when a user attempts to delete unknown :userId', async done => {
+    it('should 404 when a user attempts to delete unknown :userId', async done => {
       try {
         const response: supertest.Response = await supertest(api)
           .put(`/users/abcdefghijklmnopqrstuvwx`)
@@ -104,7 +111,7 @@ describe('Users Routes', () => {
           .send({
             username: '404 Username'
           })
-          .expect(401);
+          .expect(404);
         expect(response.body).toHaveProperty('error');
         done();
       } catch (e) {
@@ -132,25 +139,6 @@ describe('Users Routes', () => {
           .set('Authorization', `Bearer ${jwt}`)
           .expect(401);
         expect(response.body).toHaveProperty('error');
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-  });
-
-  describe('post-cleanup', () => {
-    it('should return a zero length users array', async done => {
-      try {
-        await OwnedModel.deleteMany({});
-        await BeerModel.deleteMany({});
-        await UserModel.deleteMany({});
-        const response: supertest.Response = await supertest(api)
-          .get('/users')
-          .set('Authorization', `Bearer ${jwt}`)
-          .expect(200);
-        expect(response.body).toHaveProperty('users');
-        expect(response.body.users).toHaveLength(0);
         done();
       } catch (e) {
         done(e);

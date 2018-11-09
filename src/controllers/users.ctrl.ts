@@ -92,6 +92,7 @@ export class UsersCtrl {
       const user: IUserModel = await UserModel.findByIdAndDelete(
         req.params.userId
       );
+      console.log(user);
       if (user === null) {
         const e: ApiError = new ApiError('not-found', 404);
         throw e;
