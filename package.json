@@ -27,7 +27,6 @@
     "express-jwt": "^5.3.1",
     "helmet": "^3.14.0",
     "jsonwebtoken": "^8.3.0",
-    "mockgoose": "^7.3.5",
     "mongoose": "^5.3.3",
     "morgan": "^1.9.1",
     "rand-token": "^0.4.0",
@@ -47,6 +46,7 @@
     "@types/node": "^10.11.7",
     "@types/supertest": "^2.0.6",
     "jest": "^23.6.0",
+    "mockgoose": "^7.3.5",
     "supertest": "^3.3.0",
     "ts-jest": "^23.10.4",
     "typescript": "^3.1.4"
