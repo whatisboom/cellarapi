@@ -3,4 +3,4 @@
 
 # Cellar Api
 
-This is the open source api powering <domain>.
+This is the open source api powering [Beer Cellar](https://beercellar.io).
