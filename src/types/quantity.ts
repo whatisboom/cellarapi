@@ -4,5 +4,5 @@ export interface IQuantity {
   _id: any;
   amount: number;
   beer: string;
-  userId: string;
+  user: string;
 }

@@ -18,22 +18,6 @@ import {
   validationErrorHandler
 } from './middleware';
 
-import * as mongoose from 'mongoose';
-
-mongoose.connect(
-  process.env.DB_STRING,
-  {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-  }
-);
-
-const db: mongoose.Connection = mongoose.connection;
-db.on('error', e => {
-  console.log(e);
-});
-
 const api: express.Application = express();
 const loggingFormat: string = ENV === 'production' ? 'combined' : 'dev';
 if (ENV !== 'test') {

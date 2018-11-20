@@ -1,6 +1,7 @@
 import * as cluster from 'cluster';
 import * as os from 'os';
 import api from './api';
+import db from './db';
 
 const port: string = process.env.PORT || '8000';
 const threads: number =
@@ -19,12 +20,14 @@ if (cluster.isMaster) {
   });
 } else {
   if (ENV !== 'test' && ENV !== 'ci') {
-    api.listen(port, (err: Error) => {
-      if (err) {
-        console.log(err);
-        process.exit(1);
-      }
-      console.log(`Worker ${process.pid} started`);
+    db(ENV).then(() => {
+      api.listen(port, (err: Error) => {
+        if (err) {
+          console.log(err);
+          process.exit(1);
+        }
+        console.log(`Worker ${process.pid} started`);
+      });
     });
   }
 }

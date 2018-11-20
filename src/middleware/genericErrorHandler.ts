@@ -11,7 +11,7 @@ export function genericErrorHandler(
     if (error.name === 'CastError') {
       error = new ApiError('not-found', 404);
     }
-    res.status(error.status).json({
+    res.status(error.status || 500).json({
       error
     });
   } else {
