@@ -1,8 +1,9 @@
 import { Response, NextFunction } from 'express';
+import * as mongoose from 'mongoose';
 import UserModel from '../models/user.model';
 import BeerModel from '../models/beer.model';
 import BreweryModel from '../models/brewery.model';
-import { IValidResource, ValidatedResourcesRequest } from '../types';
+import { ValidatedResourcesRequest } from '../types';
 
 export const modelMap: { [key: string]: any /* TODO: I<Resource>Model */ } = {
   beerId: BeerModel,
@@ -24,7 +25,12 @@ export async function validateResources(
         const model = modelMap[key];
         let item;
         try {
-          item = await model.findById(req.params[key]);
+          const id = req.params[key];
+          if (mongoose.Types.ObjectId.isValid(id)) {
+            item = await model.findById(id);
+          } else {
+            reject({ [key]: 'not-found' });
+          }
         } catch (e) {
           if (e.name === 'CastError') {
             e.status = 404;
