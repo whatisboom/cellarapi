@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import UsersCtrl from '../controllers/users.ctrl';
 import InventoryCtrl from '../controllers/inventory.ctrl';
+import { validateResources } from '../middleware';
 
 import {
   stripFieldsExceptForRoles,
@@ -19,19 +20,33 @@ export default function usersRoutes(api: Router): void {
 
   api
     .route('/users/:userId')
-    .get(requireRolePermission('users', 'read'), UsersCtrl.get)
+    .get(
+      validateResources,
+      requireRolePermission('users', 'read'),
+      UsersCtrl.get
+    )
     .put(
+      validateResources,
       requireRolePermission('users', 'update'),
       stripFieldsExceptForRoles(['role'], ['admin']),
       allowOwnProfile,
       UsersCtrl.put
     )
-    .delete(requireRolePermission('users', 'delete'), UsersCtrl.remove);
+    .delete(
+      validateResources,
+      requireRolePermission('users', 'delete'),
+      UsersCtrl.remove
+    );
 
   api
     .route('/users/:userId/beers')
-    .get(requireRolePermission('users', 'read'), InventoryCtrl.getUsersBeers)
+    .get(
+      validateResources,
+      requireRolePermission('users', 'read'),
+      InventoryCtrl.getUsersBeers
+    )
     .post(
+      validateResources,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
       InventoryCtrl.addBeerToUser
@@ -39,6 +54,7 @@ export default function usersRoutes(api: Router): void {
   api
     .route('/users/:userId/beers/:beerId')
     .put(
+      validateResources,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
       InventoryCtrl.updateBeerQuantity

@@ -8,9 +8,6 @@ export function genericErrorHandler(
   next: NextFunction
 ): void {
   if (!res.headersSent) {
-    if (error.name === 'CastError') {
-      error = new ApiError('not-found', 404);
-    }
     res.status(error.status || 500).json({
       error
     });
