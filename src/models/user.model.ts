@@ -70,12 +70,14 @@ UserSchema.methods.isPasswordValid = function(
 };
 
 UserSchema.pre('validate', function(next) {
-  this.set('createdAt', new Date());
+  if (!this.get('createdAt')) {
+    this.set('createdAt', new Date());
+  }
   next();
 });
 
 UserSchema.pre('save', function(next) {
-  this.update({
+  this.set({
     updatedAt: new Date()
   });
   next();

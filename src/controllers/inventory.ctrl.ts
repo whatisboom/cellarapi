@@ -54,19 +54,15 @@ export class InventoryCtrl {
       const { amount } = req.body;
       const user: IUserModel = req.resources.user;
       const beer: IBeerModel = req.resources.beer;
-      const ownedBeer: IQuantityModel = await OwnedModel.findOneAndUpdate(
-        {
-          beer: beer._id,
-          user: user._id
-        },
-        { amount },
-        {
-          new: true
-        }
-      );
+      const ownedBeer: IQuantityModel = await OwnedModel.findOne({
+        beer: beer._id,
+        user: user._id
+      });
       if (ownedBeer === null) {
         throw new ApiError('not-found: owned', 404);
       }
+      ownedBeer.set({ amount });
+      await ownedBeer.save();
       res.status(200).json({
         beer: ownedBeer
       });

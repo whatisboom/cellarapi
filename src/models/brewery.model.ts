@@ -21,12 +21,14 @@ const BrewerySchema: Schema = new Schema(
 );
 
 BrewerySchema.pre('validate', function(next) {
-  this.set('createdAt', new Date());
+  if (!this.get('createdAt')) {
+    this.set('createdAt', new Date());
+  }
   next();
 });
 
-BrewerySchema.pre('findOneAndUpdate', function(next) {
-  this.update({
+BrewerySchema.pre('save', function(next) {
+  this.set({
     updatedAt: new Date()
   });
   next();

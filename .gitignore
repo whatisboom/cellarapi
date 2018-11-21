@@ -3,3 +3,4 @@ dist
 .c9
 coverage
 .env
+.vscode

@@ -29,12 +29,14 @@ const QuantitySchema: Schema = new Schema(
 );
 
 QuantitySchema.pre('validate', function(next) {
-  this.set('createdAt', new Date());
+  if (!this.get('createdAt')) {
+    this.set('createdAt', new Date());
+  }
   next();
 });
 
-QuantitySchema.pre('findOneAndUpdate', function(next) {
-  this.update({
+QuantitySchema.pre('save', function(next) {
+  this.set({
     updatedAt: new Date()
   });
   next();

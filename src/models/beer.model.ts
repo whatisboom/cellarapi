@@ -18,12 +18,14 @@ const BeerSchema: Schema = new Schema(
 );
 
 BeerSchema.pre('validate', function(next) {
-  this.set('createdAt', new Date());
+  if (!this.get('createdAt')) {
+    this.set('createdAt', new Date());
+  }
   next();
 });
 
-BeerSchema.pre('findOneAndUpdate', function(next) {
-  this.update({
+BeerSchema.pre('save', function(next) {
+  this.set({
     updatedAt: new Date()
   });
   next();
