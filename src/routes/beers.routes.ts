@@ -1,28 +1,28 @@
-import { Router } from "express";
-import BeersCtrl from "../controllers/beers.ctrl";
-import { requireRolePermission, validateResources } from "../middleware";
+import { Router } from 'express';
+import BeersCtrl from '../controllers/beers.ctrl';
+import { requireRolePermission, validateResources } from '../middleware';
 
 export default function beersRoutes(api: Router): void {
   api
-    .route("/beers")
-    .get(requireRolePermission("beers", "read"), BeersCtrl.list)
-    .post(requireRolePermission("beers", "create"), BeersCtrl.post);
+    .route('/beers')
+    .get(requireRolePermission('beers', 'read'), BeersCtrl.list)
+    .post(requireRolePermission('beers', 'create'), BeersCtrl.post);
 
   api
-    .route("/beers/:beerId")
+    .route('/beers/:beerId')
     .get(
       validateResources,
-      requireRolePermission("beers", "read"),
+      requireRolePermission('beers', 'read'),
       BeersCtrl.get
     )
-    .put(
+    .patch(
       validateResources,
-      requireRolePermission("beers", "update"),
-      BeersCtrl.put
+      requireRolePermission('beers', 'update'),
+      BeersCtrl.patch
     )
     .delete(
       validateResources,
-      requireRolePermission("beers", "delete"),
+      requireRolePermission('beers', 'delete'),
       BeersCtrl.remove
     );
 }

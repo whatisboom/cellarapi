@@ -25,12 +25,12 @@ export default function usersRoutes(api: Router): void {
       requireRolePermission('users', 'read'),
       UsersCtrl.get
     )
-    .put(
+    .patch(
       validateResources,
       requireRolePermission('users', 'update'),
       stripFieldsExceptForRoles(['role'], ['admin']),
       allowOwnProfile,
-      UsersCtrl.put
+      UsersCtrl.patch
     )
     .delete(
       validateResources,
@@ -44,16 +44,16 @@ export default function usersRoutes(api: Router): void {
       validateResources,
       requireRolePermission('users', 'read'),
       InventoryCtrl.getUsersBeers
-    )
+    );
+  api
+    .route('/users/:userId/beers/:beerId')
     .post(
       validateResources,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
       InventoryCtrl.addBeerToUser
-    );
-  api
-    .route('/users/:userId/beers/:beerId')
-    .put(
+    )
+    .patch(
       validateResources,
       requireRolePermission('users', 'update'),
       allowOwnProfile,

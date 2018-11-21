@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import BreweryModel, { IBreweryModel } from '../models/brewery.model';
 import BeerModel, { IBeerModel } from '../models/beer.model';
-import { ApiError } from '../errors';
+import { ValidatedResourcesRequest } from '../types';
 
 export class BreweriesCtrl {
   public async post(
@@ -36,42 +36,29 @@ export class BreweriesCtrl {
   }
 
   public async get(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const brewery: IBreweryModel = await BreweryModel.findOne({
-        _id: req.params.breweryId
-      }).exec();
-      if (brewery === null) {
-        const e = new ApiError('not-found', 404);
-        throw e;
-      } else {
-        res.json({
-          brewery
-        });
-      }
+      const brewery: IBreweryModel = req.resources.brewery;
+      res.json({
+        brewery
+      });
     } catch (e) {
       return next(e);
     }
   }
 
-  public async put(
-    req: Request,
+  public async patch(
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const brewery = await BreweryModel.findOneAndUpdate(
-        {
-          _id: req.params.breweryId
-        },
-        req.body,
-        {
-          new: true
-        }
-      );
+      let brewery: IBreweryModel = req.resources.brewery;
+      brewery.set(req.body);
+      brewery = await brewery.save();
       res.json({
         brewery
       });
@@ -81,14 +68,13 @@ export class BreweriesCtrl {
   }
 
   public async remove(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const brewery: IBreweryModel = await BreweryModel.findByIdAndDelete(
-        req.params.breweryId
-      );
+      const brewery: IBreweryModel = req.resources.brewery;
+      await brewery.remove();
       res.status(204).send();
     } catch (e) {
       return next(e);

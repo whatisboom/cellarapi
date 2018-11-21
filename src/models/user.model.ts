@@ -25,18 +25,19 @@ const UserSchema: Schema = new Schema(
       default: 'user',
       validate: {
         validator: function(val: string): boolean {
-          return /user/i.test(val);
+          return /user/i.test(val) || this.role === 'admin';
         },
         message: (props: { value: string }): string =>
           `${props.value} is not a valid role.`
       }
     },
     hash: {
-      type: String
+      type: String,
+      select: false
     },
     salt: {
       type: String,
-      default: 'SALT'
+      select: false
     },
     firstName: String,
     lastName: String,
@@ -73,7 +74,7 @@ UserSchema.pre('validate', function(next) {
   next();
 });
 
-UserSchema.pre('findOneAndUpdate', function(next) {
+UserSchema.pre('save', function(next) {
   this.update({
     updatedAt: new Date()
   });

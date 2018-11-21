@@ -1,32 +1,22 @@
-import { Request, Response, NextFunction } from 'express';
-import UserModel, { IUserModel } from '../models/user.model';
+import { Response, NextFunction } from 'express';
+import { IUserModel } from '../models/user.model';
 import { IQuantityModel, OwnedModel } from '../models/quantity.model';
-import BeerModel, { IBeerModel } from '../models/beer.model';
+import { IBeerModel } from '../models/beer.model';
 import { ApiError } from '../errors';
-
-const excludeFields = '-hash -salt';
+import { ValidatedResourcesRequest } from '../types';
 
 export class InventoryCtrl {
   public async addBeerToUser(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: IUserModel = await UserModel.findById(
-        req.params.userId,
-        excludeFields
-      ).populate('owned');
-      const beer: IBeerModel = await BeerModel.findById(req.body.beerId);
+      const user: IUserModel = req.resources.user;
+      await user.populate('owned').execPopulate();
+      const beer: IBeerModel = req.resources.beer;
+
       const amount: number = req.body.amount;
-
-      if (user === null) {
-        throw new Error('not-found: user');
-      }
-
-      if (beer === null) {
-        throw new Error('not-found: beer');
-      }
 
       const ownedBeer: IQuantityModel = await OwnedModel.findOne({
         beer: beer._id,
@@ -56,22 +46,27 @@ export class InventoryCtrl {
   }
 
   public async updateBeerQuantity(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { amount, beerId, userId } = req.params;
-      const ownedBeer: IQuantityModel = await OwnedModel.findOne({
-        beer: beerId,
-        user: userId
-      });
+      const { amount } = req.body;
+      const user: IUserModel = req.resources.user;
+      const beer: IBeerModel = req.resources.beer;
+      const ownedBeer: IQuantityModel = await OwnedModel.findOneAndUpdate(
+        {
+          beer: beer._id,
+          user: user._id
+        },
+        { amount },
+        {
+          new: true
+        }
+      );
       if (ownedBeer === null) {
         throw new ApiError('not-found: owned', 404);
       }
-      await ownedBeer.update({
-        amount
-      });
       res.status(200).json({
         beer: ownedBeer
       });
@@ -81,13 +76,18 @@ export class InventoryCtrl {
   }
 
   public async getUsersBeers(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
       const ownedBeers: IQuantityModel[] = await OwnedModel.find({
-        user: req.user._id
+        user: req.resources.user._id
+      }).populate({
+        path: 'beer',
+        populate: {
+          path: 'brewery'
+        }
       });
       res.status(200).json({
         beers: ownedBeers

@@ -15,10 +15,10 @@ export default function breweriesRoutes(api: Router): void {
       requireRolePermission('breweries', 'read'),
       BreweriesCtrl.get
     )
-    .put(
+    .patch(
       validateResources,
       requireRolePermission('breweries', 'update'),
-      BreweriesCtrl.put
+      BreweriesCtrl.patch
     )
     .delete(
       validateResources,

@@ -1,10 +1,13 @@
 import { Request } from 'express';
-import { IBeer, IBrewery, IUser } from '../types';
-
-export interface IValidResource extends IBeer, IBrewery, IUser {}
+import { IBeerModel } from '../models/beer.model';
+import { IUserModel } from '../models/user.model';
+import { IBreweryModel } from '../models/brewery.model';
 
 export interface ValidatedResourcesRequest extends Request {
   resources: {
-    [key: string]: IValidResource;
+    [key: string]: IBeerModel | IBreweryModel | IUserModel;
+    beer?: IBeerModel;
+    brewery?: IBreweryModel;
+    user?: IUserModel;
   };
 }
