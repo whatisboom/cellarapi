@@ -43,7 +43,7 @@ export async function validateResources(
     });
     const resolvedResources = await Promise.all(resources);
     resolvedResources.forEach(({ key, item }) => {
-      req.resources[key] = item;
+      req.resources[key.substring(0, key.length - 2)] = item;
     });
     return next();
   } catch (e) {

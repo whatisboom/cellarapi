@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import BeerModel, { IBeerModel } from "../models/beer.model";
-import { ApiError } from "../errors";
+import { Request, Response, NextFunction } from 'express';
+import BeerModel, { IBeerModel } from '../models/beer.model';
+import { ApiError } from '../errors';
 
 export class BeersCtrl {
   public async post(
@@ -42,10 +42,10 @@ export class BeersCtrl {
       const beer: IBeerModel = await BeerModel.findOne({
         _id: req.params.beerId
       })
-        .populate("brewery")
+        .populate('brewery')
         .exec();
       if (beer === null) {
-        const e: ApiError = new ApiError("not-found", 404);
+        const e: ApiError = new ApiError('not-found', 404);
         throw e;
       } else {
         res.json({
@@ -91,7 +91,7 @@ export class BeersCtrl {
       );
       if (beer === null) {
         res.status(404).json({
-          error: "not-found"
+          error: 'not-found'
         });
       } else {
         res.status(204).send();
