@@ -32,7 +32,10 @@ export class UsersCtrl {
         .populate({
           path: 'owned',
           populate: {
-            path: 'beer'
+            path: 'beer',
+            populate: {
+              path: 'brewery'
+            }
           }
         })
         .execPopulate();
