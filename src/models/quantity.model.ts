@@ -20,21 +20,22 @@ const QuantitySchema: Schema = new Schema(
       ref: 'user',
       required: true
     },
-    createdAt: Date,
-    updatedAt: Date
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
   },
   {
     versionKey: false
   }
 );
 
-QuantitySchema.pre('validate', function(next) {
-  this.set('createdAt', new Date());
-  next();
-});
-
-QuantitySchema.pre('findOneAndUpdate', function(next) {
-  this.update({
+QuantitySchema.pre('save', function(next) {
+  this.set({
     updatedAt: new Date()
   });
   next();

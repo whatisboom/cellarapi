@@ -17,14 +17,14 @@ const RefreshTokenSchema: Schema = new Schema({
     type: Date
   },
   createdAt: {
-    type: Date
+    type: Date,
+    default: Date.now
   }
 });
 
 RefreshTokenSchema.pre('validate', function(next) {
   this.set('refreshToken', randomToken.uid(256));
   const now: Date = new Date();
-  this.set('createdAt', now);
   const later: Date = new Date(now.getTime() + 30 * 1000 * 60 * 60 * 24); // 30 days
   this.set('expires', later);
   next();

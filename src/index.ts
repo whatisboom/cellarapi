@@ -14,9 +14,9 @@ if (cluster.isMaster) {
   for (let i = 0; i < threads; i++) {
     cluster.fork();
   }
-  console.log(`server is listening on ${port}`);
+  console.log(`Server is listening on ${port}`);
   cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died: ${code}`);
+    console.log(`Worker ${worker.process.pid} died: ${code}`);
   });
 } else {
   if (ENV !== 'test' && ENV !== 'ci') {

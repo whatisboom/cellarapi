@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import BreweriesCtrl from '../controllers/breweries.ctrl';
-import { requireRolePermission } from '../middleware';
+import { requireRolePermission, validateResources } from '../middleware';
 
 export default function breweriesRoutes(api: Router): void {
   api
@@ -10,13 +10,26 @@ export default function breweriesRoutes(api: Router): void {
 
   api
     .route('/breweries/:breweryId')
-    .get(requireRolePermission('breweries', 'read'), BreweriesCtrl.get)
-    .put(requireRolePermission('breweries', 'update'), BreweriesCtrl.put)
-    .delete(requireRolePermission('breweries', 'delete'), BreweriesCtrl.remove);
+    .get(
+      validateResources,
+      requireRolePermission('breweries', 'read'),
+      BreweriesCtrl.get
+    )
+    .patch(
+      validateResources,
+      requireRolePermission('breweries', 'update'),
+      BreweriesCtrl.patch
+    )
+    .delete(
+      validateResources,
+      requireRolePermission('breweries', 'delete'),
+      BreweriesCtrl.remove
+    );
 
   api
     .route('/breweries/:breweryId/beers')
     .get(
+      validateResources,
       requireRolePermission('beers', 'read'),
       BreweriesCtrl.getBeersForBrewery
     );

@@ -23,7 +23,7 @@ export class AuthCtrl {
     const { email, password, role, username, firstName, lastName } = req.body;
     try {
       const salt = bcrypt.genSaltSync(10);
-      const user: IUserModel = await UserModel.create({
+      let user: IUserModel = new UserModel({
         email,
         firstName,
         lastName,
@@ -32,6 +32,7 @@ export class AuthCtrl {
         hash: UserModel.schema.methods.getPasswordHash(password, salt),
         salt
       });
+      await user.save();
       excludeFields.forEach((field: string) => {
         user[field] = undefined;
       });

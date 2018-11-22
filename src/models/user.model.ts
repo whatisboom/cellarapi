@@ -25,23 +25,30 @@ const UserSchema: Schema = new Schema(
       default: 'user',
       validate: {
         validator: function(val: string): boolean {
-          return /user/i.test(val);
+          return /user/i.test(val) || this.role === 'admin';
         },
         message: (props: { value: string }): string =>
           `${props.value} is not a valid role.`
       }
     },
     hash: {
-      type: String
+      type: String,
+      select: false
     },
     salt: {
       type: String,
-      default: 'SALT'
+      select: false
     },
     firstName: String,
     lastName: String,
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    },
     owned: [
       {
         type: Schema.Types.ObjectId,
@@ -68,13 +75,8 @@ UserSchema.methods.isPasswordValid = function(
   return bcrypt.compareSync(password, user.get('hash'));
 };
 
-UserSchema.pre('validate', function(next) {
-  this.set('createdAt', new Date());
-  next();
-});
-
-UserSchema.pre('findOneAndUpdate', function(next) {
-  this.update({
+UserSchema.pre('save', function(next) {
+  this.set({
     updatedAt: new Date()
   });
   next();

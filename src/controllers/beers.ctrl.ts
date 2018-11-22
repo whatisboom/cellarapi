@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import BeerModel, { IBeerModel } from '../models/beer.model';
-import { ApiError } from '../errors';
+import { ValidatedResourcesRequest } from '../types';
 
 export class BeersCtrl {
   public async post(
@@ -34,44 +34,30 @@ export class BeersCtrl {
   }
 
   public async get(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const beer: IBeerModel = await BeerModel.findOne({
-        _id: req.params.beerId
-      })
-        .populate('brewery')
-        .exec();
-      if (beer === null) {
-        const e: ApiError = new ApiError('not-found', 404);
-        throw e;
-      } else {
-        res.json({
-          beer
-        });
-      }
+      const beer: IBeerModel = req.resources.beer;
+      await beer.populate('brewery').execPopulate();
+      res.json({
+        beer
+      });
     } catch (e) {
       return next(e);
     }
   }
 
-  public async put(
-    req: Request,
+  public async patch(
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const beer: IBeerModel = await BeerModel.findOneAndUpdate(
-        {
-          _id: req.params.beerId
-        },
-        <IBeerModel>req.body,
-        {
-          new: true
-        }
-      );
+      let beer: IBeerModel = req.resources.beer;
+      beer.set(req.body);
+      beer = await beer.save();
       res.json({
         beer
       });
@@ -81,21 +67,14 @@ export class BeersCtrl {
   }
 
   public async remove(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const beer: IBeerModel = await BeerModel.findByIdAndDelete(
-        req.params.beerId
-      );
-      if (beer === null) {
-        res.status(404).json({
-          error: 'not-found'
-        });
-      } else {
-        res.status(204).send();
-      }
+      const beer: IBeerModel = req.resources.beer;
+      await beer.remove();
+      res.status(204).send();
     } catch (e) {
       next(e);
     }
