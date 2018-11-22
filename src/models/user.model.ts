@@ -41,8 +41,14 @@ const UserSchema: Schema = new Schema(
     },
     firstName: String,
     lastName: String,
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    },
     owned: [
       {
         type: Schema.Types.ObjectId,
@@ -68,13 +74,6 @@ UserSchema.methods.isPasswordValid = function(
 ): boolean {
   return bcrypt.compareSync(password, user.get('hash'));
 };
-
-UserSchema.pre('validate', function(next) {
-  if (!this.get('createdAt')) {
-    this.set('createdAt', new Date());
-  }
-  next();
-});
 
 UserSchema.pre('save', function(next) {
   this.set({

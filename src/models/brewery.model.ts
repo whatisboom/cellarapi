@@ -12,20 +12,19 @@ const BrewerySchema: Schema = new Schema(
     city: String,
     state: String,
     country: String,
-    createdAt: Date,
-    updatedAt: Date
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
   },
   {
     versionKey: false
   }
 );
-
-BrewerySchema.pre('validate', function(next) {
-  if (!this.get('createdAt')) {
-    this.set('createdAt', new Date());
-  }
-  next();
-});
 
 BrewerySchema.pre('save', function(next) {
   this.set({

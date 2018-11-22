@@ -20,20 +20,19 @@ const QuantitySchema: Schema = new Schema(
       ref: 'user',
       required: true
     },
-    createdAt: Date,
-    updatedAt: Date
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
   },
   {
     versionKey: false
   }
 );
-
-QuantitySchema.pre('validate', function(next) {
-  if (!this.get('createdAt')) {
-    this.set('createdAt', new Date());
-  }
-  next();
-});
 
 QuantitySchema.pre('save', function(next) {
   this.set({
