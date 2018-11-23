@@ -9,7 +9,7 @@ export default function beersRoutes(api: Router): void {
     .post(requireRolePermission('beers', 'create'), BeersCtrl.post);
 
   api
-    .route('/beers/:beerId')
+    .route('/beers/:beer')
     .get(
       validateResources,
       requireRolePermission('beers', 'read'),

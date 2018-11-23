@@ -19,7 +19,7 @@ export default function usersRoutes(api: Router): void {
     .get(requireRolePermission('users', 'read'), UsersCtrl.getOwnProfile);
 
   api
-    .route('/users/:userId')
+    .route('/users/:user')
     .get(
       validateResources,
       requireRolePermission('users', 'read'),
@@ -39,14 +39,14 @@ export default function usersRoutes(api: Router): void {
     );
 
   api
-    .route('/users/:userId/beers')
+    .route('/users/:user/beers')
     .get(
       validateResources,
       requireRolePermission('users', 'read'),
       InventoryCtrl.getUsersBeers
     );
   api
-    .route('/users/:userId/beers/:beerId')
+    .route('/users/:user/beers/:beer')
     .post(
       validateResources,
       requireRolePermission('users', 'update'),

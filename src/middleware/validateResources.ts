@@ -6,9 +6,18 @@ import BreweryModel from '../models/brewery.model';
 import { ValidatedResourcesRequest } from '../types';
 
 export const modelMap: { [key: string]: any /* TODO: I<Resource>Model */ } = {
-  beerId: BeerModel,
-  breweryId: BreweryModel,
-  userId: UserModel
+  user: async (username: string) =>
+    await UserModel.findOne({
+      username
+    }),
+  beer: async (name: string) =>
+    await BeerModel.findOne({
+      name
+    }),
+  brewery: async (name: string) =>
+    await BreweryModel.findOne({
+      name
+    })
 };
 // currently will throw error on the first resource that fails
 // casting mongoose CastErrors (for invalid id's) to 404
@@ -22,37 +31,23 @@ export async function validateResources(
     const params: string[] = Object.keys(req.params);
     const resources = params.map((key: string) => {
       return new Promise(async (resolve, reject) => {
-        const model = modelMap[key];
-        let item;
         try {
-          const id = req.params[key];
-          if (mongoose.Types.ObjectId.isValid(id)) {
-            item = await model.findById(id);
-          } else {
-            reject({ [key]: 'not-found' });
-          }
+          const model = modelMap[key];
+          const value = req.params[key];
+          const item = await model(value);
+          resolve({ key, item });
         } catch (e) {
-          if (e.name === 'CastError') {
-            e.status = 404;
-          }
-          return next(e);
-        }
-        if (item === null) {
-          reject({ [key]: 'not-found' });
-        } else {
-          resolve({
-            key,
-            item
-          });
+          reject(e);
         }
       });
     });
     const resolvedResources = await Promise.all(resources);
     resolvedResources.forEach(({ key, item }) => {
-      req.resources[key.substring(0, key.length - 2)] = item;
+      req.resources[key] = item;
     });
     return next();
   } catch (e) {
+    console.log(e);
     return next(e);
   }
 }
