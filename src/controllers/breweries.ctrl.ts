@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import BreweryModel, { IBreweryModel } from '../models/brewery.model';
 import BeerModel, { IBeerModel } from '../models/beer.model';
 import { ValidatedResourcesRequest } from '../types';
 
 export class BreweriesCtrl {
   public async post(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -21,7 +21,7 @@ export class BreweriesCtrl {
   }
 
   public async list(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -82,13 +82,13 @@ export class BreweriesCtrl {
   }
 
   public async getBeersForBrewery(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
       const beers: IBeerModel[] = await BeerModel.find({
-        brewery: req.params.breweryId
+        brewery: req.resources.brewery._id
       }).populate('brewery');
       res.json({
         beers

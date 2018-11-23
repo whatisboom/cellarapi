@@ -1,7 +1,10 @@
 import { Document, Model, model, Schema } from 'mongoose';
 import { IBrewery } from '../types';
+import { kabobify } from '../utils';
 
-export interface IBreweryModel extends IBrewery, Document {}
+export interface IBreweryModel extends IBrewery, Document {
+  kabobify: (str: string) => string;
+}
 
 const BrewerySchema: Schema = new Schema(
   {
@@ -9,6 +12,7 @@ const BrewerySchema: Schema = new Schema(
       type: String,
       required: true
     },
+    slug: { type: String },
     city: String,
     state: String,
     country: String,
@@ -26,12 +30,15 @@ const BrewerySchema: Schema = new Schema(
   }
 );
 
-BrewerySchema.pre('save', function(next) {
+BrewerySchema.pre('save', function(this: IBreweryModel, next) {
   this.set({
+    slug: this.kabobify(this.get('name')),
     updatedAt: new Date()
   });
   next();
 });
+
+BrewerySchema.methods.kabobify = kabobify;
 
 const BreweryModel: Model<IBreweryModel> = model<IBreweryModel>(
   'brewery',

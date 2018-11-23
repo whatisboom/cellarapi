@@ -1,13 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import UserModel, { IUserModel } from '../models/user.model';
-import { IQuantityModel, OwnedModel } from '../models/quantity.model';
 import { ApiError } from '../errors';
-import { IBeerModel } from '../models/beer.model';
 import { ValidatedResourcesRequest } from '../types';
 
 export class UsersCtrl {
   public async list(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -79,7 +77,7 @@ export class UsersCtrl {
   }
 
   public async getOwnProfile(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {

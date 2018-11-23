@@ -1,22 +1,22 @@
 import { Response, NextFunction } from 'express';
-import * as mongoose from 'mongoose';
 import UserModel from '../models/user.model';
 import BeerModel from '../models/beer.model';
 import BreweryModel from '../models/brewery.model';
-import { ValidatedResourcesRequest } from '../types';
+import { ValidatedResourcesRequest, IUser, IBeer, IBrewery } from '../types';
+import { ApiError } from '../errors';
 
 export const modelMap: { [key: string]: any /* TODO: I<Resource>Model */ } = {
-  user: async (username: string) =>
+  user: async (username: string): Promise<IUser> =>
     await UserModel.findOne({
       username
     }),
-  beer: async (name: string) =>
+  beer: async (slug: string): Promise<IBeer> =>
     await BeerModel.findOne({
-      name
+      slug
     }),
-  brewery: async (name: string) =>
+  brewery: async (slug: string): Promise<IBrewery> =>
     await BreweryModel.findOne({
-      name
+      slug
     })
 };
 // currently will throw error on the first resource that fails
@@ -25,16 +25,19 @@ export async function validateResources(
   req: ValidatedResourcesRequest,
   res: Response,
   next: NextFunction
-) {
+): Promise<void> {
   try {
     req.resources = {};
     const params: string[] = Object.keys(req.params);
     const resources = params.map((key: string) => {
       return new Promise(async (resolve, reject) => {
         try {
-          const model = modelMap[key];
+          const findDocument = modelMap[key];
           const value = req.params[key];
-          const item = await model(value);
+          const item = await findDocument(value);
+          if (item === null) {
+            reject(new ApiError(`${key}: not found`, 404));
+          }
           resolve({ key, item });
         } catch (e) {
           reject(e);
@@ -47,7 +50,6 @@ export async function validateResources(
     });
     return next();
   } catch (e) {
-    console.log(e);
     return next(e);
   }
 }
