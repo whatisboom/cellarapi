@@ -9,7 +9,7 @@ export default function breweriesRoutes(api: Router): void {
     .post(requireRolePermission('breweries', 'create'), BreweriesCtrl.post);
 
   api
-    .route('/breweries/:breweryId')
+    .route('/breweries/:brewery')
     .get(
       validateResources,
       requireRolePermission('breweries', 'read'),
@@ -27,7 +27,7 @@ export default function breweriesRoutes(api: Router): void {
     );
 
   api
-    .route('/breweries/:breweryId/beers')
+    .route('/breweries/:brewery/beers')
     .get(
       validateResources,
       requireRolePermission('beers', 'read'),

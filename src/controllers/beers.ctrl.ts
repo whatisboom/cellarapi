@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import BeerModel, { IBeerModel } from '../models/beer.model';
 import { ValidatedResourcesRequest } from '../types';
 
 export class BeersCtrl {
   public async post(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -19,7 +19,7 @@ export class BeersCtrl {
   }
 
   public async list(
-    req: Request,
+    req: ValidatedResourcesRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
