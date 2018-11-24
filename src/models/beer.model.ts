@@ -8,7 +8,7 @@ export interface IBeerModel extends IBeer, Document {
 
 const BeerSchema: Schema = new Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     slug: { type: String },
     abv: Number,
     style: String,
