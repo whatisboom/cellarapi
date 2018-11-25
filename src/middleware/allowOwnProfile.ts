@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { ApiError } from '../errors';
+import { UnauthorizedError } from '../errors';
 
 export function allowOwnProfile(
-  e: ApiError,
+  e: UnauthorizedError,
   req: Request,
   res: Response,
   next: NextFunction

@@ -1,5 +1,6 @@
 import * as jwt from 'express-jwt';
 import { Request, RequestHandler, Response, NextFunction } from 'express';
+import { UnauthorizedError } from '../errors';
 
 export function jwtValidator(JWT_SECRET: string): RequestHandler {
   return jwt({
@@ -15,10 +16,11 @@ export function jwtErrorHandler(
   res: Response,
   next: NextFunction
 ): void {
-  if (err.name === 'UnauthorizedError') {
-    res.status(401).json({
-      error: 'invalid-jwt'
-    });
+  try {
+    if (err.name === 'UnauthorizedError') {
+      throw new UnauthorizedError('Invalid JWT');
+    }
+  } catch (e) {
+    next(e);
   }
-  next(err);
 }
