@@ -45,7 +45,6 @@ require('./routes/auth.routes').default(api);
 require('./routes/base.routes').default(api);
 require('./routes/beers.routes').default(api);
 require('./routes/breweries.routes').default(api);
-require('./routes/test.routes').default(api);
 require('./routes/users.routes').default(api);
 
 api.use(validationErrorHandler);
