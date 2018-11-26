@@ -91,7 +91,10 @@ export class BreweriesCtrl {
         brewery: req.resources.brewery._id
       }).populate('brewery');
       res.json({
-        beers
+        brewery: {
+          ...req.resources.brewery.toJSON(),
+          beers
+        }
       });
     } catch (e) {
       return next(e);
