@@ -18,7 +18,8 @@ const UserSchema: Schema = new Schema(
       type: String,
       required: true,
       unique: true,
-      minlength: 3
+      minlength: 3,
+      match: [/^\w+$/, 'Invalid Username']
     },
     role: {
       type: String,
