@@ -54,7 +54,11 @@ const UserSchema: Schema = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'owned'
       }
-    ]
+    ],
+    avatar: {
+      type: String,
+      default: 'https://placekitten.com/600/600'
+    }
   },
   {
     versionKey: false
