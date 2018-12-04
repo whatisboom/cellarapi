@@ -58,6 +58,14 @@ const UserSchema: Schema = new Schema(
     avatar: {
       type: String,
       default: 'https://placekitten.com/600/600'
+    },
+    location: {
+      type: String
+    },
+    social: {
+      twitter: String,
+      instagram: String,
+      untappd: String
     }
   },
   {
