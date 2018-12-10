@@ -11,13 +11,11 @@ export class Untappd {
     const userResponse = await this.getUserInfo();
     const data = await this.translateUserResponse(userResponse);
     const user = await this.createUser(data);
-    console.log(user);
     return user;
   }
 
   private async getAccessToken(code: string): Promise<string> {
     const url = this.getAuthorizeUrl(code);
-    console.log(url);
     return await fetch(url)
       .then((res) => res.json())
       .then((res) => {
