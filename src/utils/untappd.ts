@@ -1,23 +1,21 @@
 import fetch from 'node-fetch';
 import { IUser } from '../types';
-import UserModel from '../models/user.model';
+import UserModel, { IUserModel } from '../models/user.model';
 import { ConflictError } from '../errors';
 
 export class Untappd {
   private accessToken: string;
 
-  public async oauthAndCreateUser(code: string): Promise<IUser> {
+  public async oauthAndCreateUser(code: string): Promise<IUserModel> {
     this.accessToken = await this.getAccessToken(code);
     const userResponse = await this.getUserInfo();
     const data = await this.translateUserResponse(userResponse);
     const user = await this.createUser(data);
-    console.log(user);
     return user;
   }
 
   private async getAccessToken(code: string): Promise<string> {
     const url = this.getAuthorizeUrl(code);
-    console.log(url);
     return await fetch(url)
       .then((res) => res.json())
       .then((res) => {
@@ -53,14 +51,14 @@ export class Untappd {
     return user;
   }
 
-  private async createUser(data: IUser): Promise<IUser> {
-    const exists = await UserModel.findOne({
+  private async createUser(data: IUser): Promise<IUserModel> {
+    const exists: IUserModel = await UserModel.findOne({
       email: data.email
     });
     if (exists !== null) {
       throw new ConflictError('User Already Exists');
     }
-    const created = new UserModel(data);
+    const created: IUserModel = new UserModel(data);
     await created.save();
     return created;
   }

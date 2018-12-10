@@ -138,7 +138,8 @@ export class AuthCtrl {
     const untappdClient = new Untappd();
     try {
       const user = await untappdClient.oauthAndCreateUser(code);
-      res.json({ user });
+      const token = this.getJwtForUser(user);
+      res.json({ user, token });
     } catch (e) {
       next(e);
     }
