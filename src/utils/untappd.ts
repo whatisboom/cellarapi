@@ -42,9 +42,9 @@ export class Untappd {
     }&response_type=code`;
   }
 
-  private async translateUserResponse(response: any): Promise<IUser> {
+  private async translateUserResponse(response: any): Promise<any> {
     console.log('translateUserResponse: ', response);
-    const user: IUser = {
+    const user = {
       email: response.user.settings.email_address,
       username: response.user.user_name,
       firstName: response.user.first_name,

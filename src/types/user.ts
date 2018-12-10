@@ -1,7 +1,7 @@
 import { IBeer } from './index';
 
 export interface IUser {
-  _id?: string;
+  _id: any;
   username: string;
   email: string;
   role?: string;
