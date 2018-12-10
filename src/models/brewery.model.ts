@@ -13,7 +13,7 @@ const BrewerySchema: Schema = new Schema(
       required: true,
       unique: true
     },
-    slug: { type: String },
+    slug: { type: String, unique: true },
     city: String,
     state: String,
     country: String,
