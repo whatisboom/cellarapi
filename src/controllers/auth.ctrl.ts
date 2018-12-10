@@ -6,6 +6,7 @@ import { ApiError } from '../errors';
 import RefreshTokenModel, {
   IRefreshTokenModel
 } from '../models/refresh-token.model';
+import { Untappd } from '../utils';
 
 import fetch from 'node-fetch';
 
@@ -134,26 +135,10 @@ export class AuthCtrl {
 
   public async oauth(req: Request, res: Response, next: NextFunction) {
     const code = req.body.code;
-    let access_token;
+    const untappdClient = new Untappd();
     try {
-      const url = `https://untappd.com/oauth/authorize/?code=${code}&redirect_url=${
-        process.env.UNTAPPD_CALLBACK_URL
-      }&client_id=${process.env.UNTAPPD_CLIENT_ID}&client_secret=${
-        process.env.UNTAPPD_CLIENT_SECRET
-      }&response_type=code`;
-      console.log(url);
-      access_token = await fetch(url)
-        .then((res) => res.json())
-        .then((res) => res.response.access_token);
-    } catch (e) {
-      next(e);
-    }
-    try {
-      const userResponse = await fetch(
-        `https://api.untappd.com/v4/user/info?access_token=${access_token}`
-      ).then((res: any) => res.json());
-      console.log(userResponse);
-      res.json(userResponse);
+      const user = untappdClient.oauthAndCreateUser(code);
+      res.json({ user });
     } catch (e) {
       next(e);
     }
