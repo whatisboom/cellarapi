@@ -8,6 +8,8 @@ import RefreshTokenModel, {
 } from '../models/refresh-token.model';
 import { Untappd } from '../utils';
 
+import fetch from 'node-fetch';
+
 const excludeFields: string[] = ['hash', 'salt'];
 
 export class AuthCtrl {
