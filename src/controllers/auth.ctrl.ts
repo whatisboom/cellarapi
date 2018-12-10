@@ -70,7 +70,7 @@ export class AuthCtrl {
       const refreshToken: IRefreshTokenModel = await this.getOrCreateRefreshToken(
         user._id
       );
-      res.json({ user, token, refreshToken });
+      res.json({ user, token, refreshToken: refreshToken.get('refreshToken') });
     } catch (e) {
       next(e);
     }
