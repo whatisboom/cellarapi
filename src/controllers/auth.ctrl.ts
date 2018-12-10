@@ -137,7 +137,7 @@ export class AuthCtrl {
     const code = req.body.code;
     const untappdClient = new Untappd();
     try {
-      const user = untappdClient.oauthAndCreateUser(code);
+      const user = await untappdClient.oauthAndCreateUser(code);
       res.json({ user });
     } catch (e) {
       next(e);
