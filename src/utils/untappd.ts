@@ -10,15 +10,17 @@ export class Untappd {
     this.accessToken = await this.getAccessToken(code);
     const userResponse = await this.getUserInfo();
     const data = await this.translateUserResponse(userResponse);
-    return await this.createUser(data);
+    const user = await this.createUser(data);
+    console.log(user);
+    return user;
   }
 
   private async getAccessToken(code: string): Promise<string> {
     const url = this.getAuthorizeUrl(code);
+    console.log(url);
     return await fetch(url)
       .then((res) => res.json())
       .then((res) => {
-        console.log('getAccessToken: ', res.response.access_token);
         return res.response.access_token;
       });
   }
@@ -29,7 +31,6 @@ export class Untappd {
     )
       .then((res: any) => res.json())
       .then((res) => {
-        console.log('getUserInfo: ', res.response);
         return res.response;
       });
   }
@@ -43,7 +44,6 @@ export class Untappd {
   }
 
   private async translateUserResponse(response: any): Promise<any> {
-    console.log('translateUserResponse: ', response);
     const user = {
       email: response.user.settings.email_address,
       username: response.user.user_name,
@@ -54,8 +54,7 @@ export class Untappd {
   }
 
   private async createUser(data: IUser): Promise<IUser> {
-    console.log('createUser: ', data);
-    const exists = await UserModel.find({
+    const exists = await UserModel.findOne({
       email: data.email
     });
     if (exists !== null) {
