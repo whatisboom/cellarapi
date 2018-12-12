@@ -1,16 +1,15 @@
 import fetch from 'node-fetch';
 import { IUser } from '../types';
-import UserModel from '../models/user.model';
-import { ConflictError } from '../errors';
+import UserModel, { IUserModel } from '../models/user.model';
 
 export class Untappd {
   private accessToken: string;
 
-  public async oauthAndCreateUser(code: string): Promise<IUser> {
+  public async oauthAndCreateUser(code: string): Promise<IUserModel> {
     this.accessToken = await this.getAccessToken(code);
     const userResponse = await this.getUserInfo();
     const data = await this.translateUserResponse(userResponse);
-    const user = await this.createUser(data);
+    const user = await this.findOrCreateUser(data);
     return user;
   }
 
@@ -51,14 +50,14 @@ export class Untappd {
     return user;
   }
 
-  private async createUser(data: IUser): Promise<IUser> {
-    const exists = await UserModel.findOne({
+  private async findOrCreateUser(data: IUser): Promise<IUserModel> {
+    const exists: IUserModel = await UserModel.findOne({
       email: data.email
     });
     if (exists !== null) {
-      throw new ConflictError('User Already Exists');
+      return exists;
     }
-    const created = new UserModel(data);
+    const created: IUserModel = new UserModel(data);
     await created.save();
     return created;
   }
