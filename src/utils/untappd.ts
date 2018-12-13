@@ -56,15 +56,13 @@ export class Untappd {
 
   private async findOrCreateUser(data: IUser): Promise<IUserModel> {
     const exists: IUserModel = await UserModel.findOne({
-      oauth: {
-        untappd: data.oauth.untappd
-      }
+      'oauth.untappd': data.oauth.untappd
     });
     if (exists !== null) {
       return exists;
     }
     const created: IUserModel = new UserModel(data);
-    await created.save();
-    return created;
+    const user = await created.save();
+    return user;
   }
 }
