@@ -9,6 +9,7 @@ export class Untappd {
     this.accessToken = await this.getAccessToken(code);
     const userResponse = await this.getUserInfo();
     const data = await this.translateUntappdUserInfoResponse(userResponse);
+    data.untappdApiKey = this.accessToken;
     const user = await this.findOrCreateUser(data);
     return user;
   }
