@@ -33,14 +33,6 @@ const UserSchema: Schema = new Schema(
           `${props.value} is not a valid role.`
       }
     },
-    hash: {
-      type: String,
-      select: false
-    },
-    salt: {
-      type: String,
-      select: false
-    },
     firstName: String,
     lastName: String,
     createdAt: {
@@ -66,28 +58,23 @@ const UserSchema: Schema = new Schema(
     },
     social: {
       twitter: String,
-      instagram: String,
-      untappd: String
+      instagram: String
+    },
+    untappdApiKey: {
+      type: String,
+      select: false
+    },
+    oauth: {
+      untappd: {
+        Type: String,
+        required: true
+      }
     }
   },
   {
     versionKey: false
   }
 );
-
-UserSchema.methods.getPasswordHash = function(
-  password: string,
-  salt: string
-): string {
-  return bcrypt.hashSync(password, salt);
-};
-
-UserSchema.methods.isPasswordValid = function(
-  password: string,
-  user: Schema
-): boolean {
-  return bcrypt.compareSync(password, user.get('hash'));
-};
 
 UserSchema.pre('save', function(next) {
   this.set({

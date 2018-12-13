@@ -8,7 +8,7 @@ export class Untappd {
   public async oauthAndCreateUser(code: string): Promise<IUserModel> {
     this.accessToken = await this.getAccessToken(code);
     const userResponse = await this.getUserInfo();
-    const data = await this.translateUserResponse(userResponse);
+    const data = await this.translateUntappdUserInfoResponse(userResponse);
     const user = await this.findOrCreateUser(data);
     return user;
   }
@@ -40,19 +40,24 @@ export class Untappd {
     }&response_type=code`;
   }
 
-  private async translateUserResponse(response: any): Promise<any> {
+  private async translateUntappdUserInfoResponse(response: any): Promise<any> {
     const user = {
       email: response.user.settings.email_address,
       username: response.user.user_name,
       firstName: response.user.first_name,
-      lastName: response.user.last_name
+      lastName: response.user.last_name,
+      oauth: {
+        untappd: response.user.uid
+      }
     };
     return user;
   }
 
   private async findOrCreateUser(data: IUser): Promise<IUserModel> {
     const exists: IUserModel = await UserModel.findOne({
-      email: data.email
+      oauth: {
+        untappd: data.oauth.untappd
+      }
     });
     if (exists !== null) {
       return exists;
