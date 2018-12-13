@@ -5,10 +5,11 @@ export interface IUser {
   username: string;
   email: string;
   role?: string;
-  hash?: string;
-  salt?: string;
   firstName?: string;
   lastName?: string;
   beers?: Array<string | IBeer>;
   updatedAt?: Date;
+  oauth?: {
+    untappd: string;
+  };
 }

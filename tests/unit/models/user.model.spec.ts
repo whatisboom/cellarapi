@@ -2,7 +2,7 @@ import UserModel, { IUserModel } from '../../../src/models/user.model';
 import * as bcrypt from 'bcryptjs';
 
 describe('UserModel', () => {
-  it('should throw an error when username is missing', async done => {
+  it('should throw an error when username is missing', async (done) => {
     try {
       const user: IUserModel = new UserModel();
       await user.validate();
@@ -46,7 +46,7 @@ describe('UserModel', () => {
     );
   });
 
-  it('should validate role properly', async done => {
+  it('should validate role properly', async (done) => {
     try {
       const user: IUserModel = await UserModel.create({
         email: 'test@email.com',
@@ -63,45 +63,5 @@ describe('UserModel', () => {
     } finally {
       done();
     }
-  });
-
-  describe('schema', () => {
-    it('should be defined', () => {
-      expect(UserModel.schema).toBeDefined();
-    });
-    describe('methods', () => {
-      it('should be defined', () => {
-        expect(UserModel.schema.methods).toBeDefined();
-      });
-
-      describe('getPasswordHash()', () => {
-        const { getPasswordHash } = UserModel.schema.methods;
-        it('should be defined', () => {
-          expect(getPasswordHash).toBeDefined();
-        });
-        it('should return a string', () => {
-          spyOn(bcrypt, 'hashSync').and.returnValue('asd');
-          expect(typeof getPasswordHash('test_password', 'test_salt')).toBe(
-            'string'
-          );
-        });
-      });
-
-      describe('isPasswordValid()', () => {
-        const { isPasswordValid } = UserModel.schema.methods;
-        it('should be defined', () => {
-          expect(isPasswordValid).toBeDefined();
-        });
-        it('should return a boolean', () => {
-          expect(
-            isPasswordValid('test_password', {
-              get() {
-                return 'hash';
-              }
-            })
-          ).toBe(false);
-        });
-      });
-    });
   });
 });
