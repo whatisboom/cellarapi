@@ -66,7 +66,7 @@ const UserSchema: Schema = new Schema(
     },
     oauth: {
       untappd: {
-        Type: String
+        type: String
       }
     }
   },
