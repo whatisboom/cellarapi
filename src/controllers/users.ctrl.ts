@@ -82,7 +82,15 @@ export class UsersCtrl {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: IUserModel = await UserModel.findById(req.user._id);
+      const user: IUserModel = await UserModel.findById(req.user._id).populate({
+        path: 'owned',
+        populate: {
+          path: 'beer',
+          populate: {
+            path: 'brewery'
+          }
+        }
+      });
       if (user === null) {
         const e: ApiError = new ApiError('not-found', 404);
         throw e;
