@@ -4,6 +4,9 @@ import UserModel, { IUserModel } from '../models/user.model';
 
 export class Untappd {
   private accessToken: string;
+  private apiHost: string = 'https://api.untappd.com';
+
+  constructor(private apiKey: string = '') {}
 
   public async oauthAndCreateUser(code: string): Promise<IUserModel> {
     this.accessToken = await this.getAccessToken(code);
@@ -12,6 +15,11 @@ export class Untappd {
     data.untappdApiKey = this.accessToken;
     const user = await this.findOrCreateUser(data);
     return user;
+  }
+
+  public async searchBeer(q: string) {
+    const url = `${this.apiHost}/v4/search/beer?q=${q}`;
+    return this.request(url);
   }
 
   private async getAccessToken(code: string): Promise<string> {
@@ -64,5 +72,10 @@ export class Untappd {
     const created: IUserModel = new UserModel(data);
     const user = await created.save();
     return user;
+  }
+
+  private async request(url: string) {
+    const withToken = `${url}&access_token=${this.apiKey}`;
+    return fetch(withToken).then((res) => res.json());
   }
 }
