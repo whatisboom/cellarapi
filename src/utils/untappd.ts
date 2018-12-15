@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { IUser } from '../types';
+import { IUser, IBeer } from '../types';
 import UserModel, { IUserModel } from '../models/user.model';
 
 export class Untappd {
@@ -11,7 +11,7 @@ export class Untappd {
   public async oauthAndCreateUser(code: string): Promise<IUserModel> {
     this.accessToken = await this.getAccessToken(code);
     const userResponse = await this.getUserInfo();
-    const data = await this.translateUntappdUserInfoResponse(userResponse);
+    const data = this.translateUserInfoResponse(userResponse);
     data.untappdApiKey = this.accessToken;
     const user = await this.findOrCreateUser(data);
     return user;
@@ -19,7 +19,11 @@ export class Untappd {
 
   public async searchBeer(q: string) {
     const url = `${this.apiHost}/v4/search/beer?q=${q}`;
-    return this.request(url);
+    return this.request(url).then((res) => ({
+      beers: res.response.beers.items.map((item: { beer: any; brewery: any }) =>
+        this.translateBeerResponse(item)
+      )
+    }));
   }
 
   private async getAccessToken(code: string): Promise<string> {
@@ -49,7 +53,7 @@ export class Untappd {
     }&response_type=code`;
   }
 
-  private async translateUntappdUserInfoResponse(response: any): Promise<any> {
+  private translateUserInfoResponse(response: any): any {
     const user = {
       email: response.user.settings.email_address,
       username: response.user.user_name,
@@ -62,19 +66,38 @@ export class Untappd {
     return user;
   }
 
-  private async findOrCreateUser(data: IUser): Promise<IUserModel> {
-    const exists: IUserModel = await UserModel.findOne({
-      'oauth.untappd': data.oauth.untappd
-    });
-    if (exists !== null) {
-      return exists;
-    }
-    const created: IUserModel = new UserModel(data);
-    const user = await created.save();
-    return user;
+  private translateBeerResponse({ beer, brewery }: any) {
+    const { brewery_name } = brewery;
+    const { beer_name, beer_abv, beer_style } = beer;
+    const translated = {
+      name: beer_name,
+      abv: beer_abv,
+      style: beer_style,
+      brewery: {
+        name: brewery_name
+      }
+    };
+    return translated;
   }
 
-  private async request(url: string) {
+  private async findOrCreateUser(data: IUser): Promise<IUserModel> {
+    try {
+      const exists: IUserModel = await UserModel.findOne({
+        'oauth.untappd': data.oauth.untappd
+      });
+      if (exists !== null) {
+        exists.untappdApiKey = this.accessToken;
+        return await exists.save();
+      }
+      const created: IUserModel = new UserModel(data);
+      const user = await created.save();
+      return user;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  private async request(url: string): Promise<any> {
     const withToken = `${url}&access_token=${this.apiKey}`;
     return fetch(withToken).then((res) => res.json());
   }
