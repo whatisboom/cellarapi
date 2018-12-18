@@ -8,6 +8,7 @@ import {
   allowOwnProfile,
   requireRolePermission
 } from '../middleware';
+import { validateUser } from '../middleware/validateUser';
 
 export default function usersRoutes(api: Router): void {
   api
@@ -20,11 +21,7 @@ export default function usersRoutes(api: Router): void {
 
   api
     .route('/users/:user')
-    .get(
-      validateResources,
-      requireRolePermission('users', 'read'),
-      UsersCtrl.get
-    )
+    .get(validateUser, requireRolePermission('users', 'read'), UsersCtrl.get)
     .patch(
       validateResources,
       requireRolePermission('users', 'update'),
