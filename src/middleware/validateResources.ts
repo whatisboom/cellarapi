@@ -10,9 +10,9 @@ export const modelMap: { [key: string]: any /* TODO: I<Resource>Model */ } = {
     await UserModel.findOne({
       username
     }),
-  beer: async (slug: string): Promise<IBeer> =>
+  beer: async (untappdId: number): Promise<IBeer> =>
     await BeerModel.findOne({
-      slug
+      untappdId
     }),
   brewery: async (slug: string): Promise<IBrewery> =>
     await BreweryModel.findOne({
@@ -35,7 +35,7 @@ export async function validateResources(
           const findDocument = modelMap[key];
           const value = req.params[key];
           const item = await findDocument(value);
-          if (item === null) {
+          if (item === null && key === 'user') {
             reject(new ApiError(`${key}: not found`, 404));
           }
           resolve({ key, item });

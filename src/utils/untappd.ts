@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import { IUser, IBeer } from '../types';
 import UserModel, { IUserModel } from '../models/user.model';
+import { IBreweryModel } from '../models/brewery.model';
 
 export class Untappd {
   private accessToken: string;
@@ -20,10 +21,25 @@ export class Untappd {
   public async searchBeer(q: string) {
     const url = `${this.apiHost}/v4/search/beer?q=${q}`;
     return this.request(url).then((res) => ({
-      beers: res.response.beers.items.map((item: { beer: any; brewery: any }) =>
-        this.translateBeerResponse(item)
+      beers: res.response.beers.items.map(
+        (item: { beer: any; brewery: any }) => {
+          const translated = this.translateBeerResponse(item.beer);
+          translated.brewery = this.translateBreweryResponse(item.brewery);
+          return translated;
+        }
       )
     }));
+  }
+
+  public async getBeerInfo(uid: number): Promise<IBeer> {
+    const url = `${this.apiHost}/v4/beer/info/${uid}`;
+    return this.request(url).then((res) => {
+      const translated = this.translateBeerResponse(res.response.beer);
+      translated.brewery = this.translateBreweryResponse(
+        res.response.beer.brewery
+      );
+      return translated;
+    });
   }
 
   private async getAccessToken(code: string): Promise<string> {
@@ -66,18 +82,35 @@ export class Untappd {
     return user;
   }
 
-  private translateBeerResponse({ beer, brewery }: any) {
-    const { brewery_name } = brewery;
-    const { beer_name, beer_abv, beer_style } = beer;
+  private translateBeerResponse(beer: any): IBeer {
+    const { bid, beer_name, beer_abv, beer_style, beer_slug } = beer;
     const translated = {
       name: beer_name,
       abv: beer_abv,
       style: beer_style,
-      brewery: {
-        name: brewery_name
-      }
+      slug: beer_slug,
+      untappdId: bid
     };
-    return translated;
+    return <IBeer>(<unknown>translated);
+  }
+
+  private translateBreweryResponse(brewery: any): IBreweryModel {
+    const {
+      brewery_id,
+      brewery_name,
+      brewery_slug,
+      location,
+      country_name
+    } = brewery;
+    const translated = {
+      name: brewery_name,
+      slug: brewery_slug,
+      untappdId: brewery_id,
+      city: location.brewery_city,
+      state: location.brewery_state,
+      country: country_name
+    };
+    return <IBreweryModel>(<unknown>translated);
   }
 
   private async findOrCreateUser(data: IUser): Promise<IUserModel> {
@@ -98,7 +131,11 @@ export class Untappd {
   }
 
   private async request(url: string): Promise<any> {
-    const withToken = `${url}&access_token=${this.apiKey}`;
+    const withToken =
+      url.indexOf('?') > -1
+        ? `${url}&access_token=${this.apiKey}`
+        : `${url}?access_token=${this.apiKey}`;
+    console.log(withToken);
     return fetch(withToken).then((res) => res.json());
   }
 }

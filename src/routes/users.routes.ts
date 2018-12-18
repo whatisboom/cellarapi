@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import UsersCtrl from '../controllers/users.ctrl';
 import InventoryCtrl from '../controllers/inventory.ctrl';
-import { validateResources } from '../middleware';
+import { validateResources, populateFullUser } from '../middleware';
 
 import {
   stripFieldsExceptForRoles,
@@ -51,6 +51,7 @@ export default function usersRoutes(api: Router): void {
       validateResources,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
+      populateFullUser,
       InventoryCtrl.addBeerToUser
     )
     .patch(
