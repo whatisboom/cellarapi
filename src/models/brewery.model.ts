@@ -24,6 +24,11 @@ const BrewerySchema: Schema = new Schema(
     updatedAt: {
       type: Date,
       default: Date.now
+    },
+    untappdId: {
+      type: Number,
+      required: true,
+      unique: true
     }
   },
   {
