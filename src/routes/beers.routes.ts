@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import BeersCtrl from '../controllers/beers.ctrl';
-import { requireRolePermission, validateResources } from '../middleware';
+import {
+  requireRolePermission,
+  validateOrCreateBeer,
+  validateOrCreateBrewery,
+  populateFullUser
+} from '../middleware';
 
 export default function beersRoutes(api: Router): void {
   api
@@ -11,17 +16,21 @@ export default function beersRoutes(api: Router): void {
   api
     .route('/beers/:beer')
     .get(
-      validateResources,
+      populateFullUser,
+      validateOrCreateBrewery,
+      validateOrCreateBeer,
       requireRolePermission('beers', 'read'),
       BeersCtrl.get
     )
     .patch(
-      validateResources,
+      populateFullUser,
+      validateOrCreateBeer,
       requireRolePermission('beers', 'update'),
       BeersCtrl.patch
     )
     .delete(
-      validateResources,
+      populateFullUser,
+      validateOrCreateBeer,
       requireRolePermission('beers', 'delete'),
       BeersCtrl.remove
     );

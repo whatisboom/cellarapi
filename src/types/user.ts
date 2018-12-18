@@ -12,4 +12,5 @@ export interface IUser {
   oauth?: {
     untappd: string;
   };
+  untappdApiKey?: string;
 }

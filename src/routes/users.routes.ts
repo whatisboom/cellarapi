@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import UsersCtrl from '../controllers/users.ctrl';
 import InventoryCtrl from '../controllers/inventory.ctrl';
-import { validateResources } from '../middleware';
+import { validateResources, populateFullUser } from '../middleware';
 
 import {
   stripFieldsExceptForRoles,
   allowOwnProfile,
-  requireRolePermission
+  requireRolePermission,
+  validateUser
 } from '../middleware';
 
 export default function usersRoutes(api: Router): void {
@@ -20,11 +21,7 @@ export default function usersRoutes(api: Router): void {
 
   api
     .route('/users/:user')
-    .get(
-      validateResources,
-      requireRolePermission('users', 'read'),
-      UsersCtrl.get
-    )
+    .get(validateUser, requireRolePermission('users', 'read'), UsersCtrl.get)
     .patch(
       validateResources,
       requireRolePermission('users', 'update'),
@@ -51,6 +48,7 @@ export default function usersRoutes(api: Router): void {
       validateResources,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
+      populateFullUser,
       InventoryCtrl.addBeerToUser
     )
     .patch(
