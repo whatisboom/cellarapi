@@ -6,9 +6,9 @@ import { validateResources, populateFullUser } from '../middleware';
 import {
   stripFieldsExceptForRoles,
   allowOwnProfile,
-  requireRolePermission
+  requireRolePermission,
+  validateUser
 } from '../middleware';
-import { validateUser } from '../middleware/validateUser';
 
 export default function usersRoutes(api: Router): void {
   api
