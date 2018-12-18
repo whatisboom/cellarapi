@@ -55,6 +55,7 @@ export default function usersRoutes(api: Router): void {
       validateOrCreateBeerByUntappdId,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
+      populateFullUser,
       InventoryCtrl.addBeerToUser
     )
     .patch(

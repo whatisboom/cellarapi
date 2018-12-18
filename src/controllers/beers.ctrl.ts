@@ -40,6 +40,7 @@ export class BeersCtrl {
   ): Promise<void> {
     try {
       const beer: IBeerModel = req.resources.beer;
+      console.log(beer);
       await beer.populate('brewery').execPopulate();
       res.json({
         beer

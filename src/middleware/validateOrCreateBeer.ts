@@ -5,6 +5,7 @@ import { Untappd } from '../utils';
 import BreweryModel, { IBreweryModel } from '../models/brewery.model';
 
 export async function validateOrCreateBeerByUntappdId(
+
   req: ValidatedResourcesRequest,
   res: Response,
   next: NextFunction
@@ -52,3 +53,4 @@ export async function validateOrCreateBeerBySlug(
     next(e);
   }
 }
+
