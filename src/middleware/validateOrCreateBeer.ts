@@ -2,9 +2,10 @@ import { Response, NextFunction } from 'express';
 import BeerModel, { IBeerModel } from '../models/beer.model';
 import { ValidatedResourcesRequest } from '../types';
 import { Untappd } from '../utils';
-import { IBreweryModel } from '../models/brewery.model';
+import BreweryModel, { IBreweryModel } from '../models/brewery.model';
 
-export async function validateOrCreateBeer(
+export async function validateOrCreateBeerByUntappdId(
+
   req: ValidatedResourcesRequest,
   res: Response,
   next: NextFunction
@@ -19,7 +20,9 @@ export async function validateOrCreateBeer(
       const untappd = new Untappd(req.user.untappdApiKey);
       beer = <IBeerModel>await untappd.getBeerInfo(untappdId);
       beer.brewery = <IBreweryModel>beer.brewery;
-      beer.brewery = beer.brewery._id;
+      beer.brewery = await BreweryModel.findOne({
+        untappdId: beer.brewery.untappdId
+      });
       beer = new BeerModel(beer);
       beer = await beer.save();
     }
@@ -29,3 +32,25 @@ export async function validateOrCreateBeer(
     next(e);
   }
 }
+
+export async function validateOrCreateBeerBySlug(
+  req: ValidatedResourcesRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  req.resources = req.resources || {};
+  try {
+    console.log(req.params.beer);
+    let beer = await BeerModel.findOne({
+      slug: req.params.beer
+    });
+    if (beer === null && req.user.untappdApiKey) {
+      throw new Error(`404 beer not found: ${req.params.beer}`);
+    }
+    req.resources.beer = beer;
+    next();
+  } catch (e) {
+    next(e);
+  }
+}
+

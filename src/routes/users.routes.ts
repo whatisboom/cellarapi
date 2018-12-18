@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import UsersCtrl from '../controllers/users.ctrl';
 import InventoryCtrl from '../controllers/inventory.ctrl';
-import { validateResources, populateFullUser } from '../middleware';
+import {
+  populateFullUser,
+  validateOrCreateBrewery,
+  validateOrCreateBeerByUntappdId
+} from '../middleware';
 
 import {
   stripFieldsExceptForRoles,
@@ -23,14 +27,14 @@ export default function usersRoutes(api: Router): void {
     .route('/users/:user')
     .get(validateUser, requireRolePermission('users', 'read'), UsersCtrl.get)
     .patch(
-      validateResources,
+      validateUser,
       requireRolePermission('users', 'update'),
       stripFieldsExceptForRoles(['role'], ['admin']),
       allowOwnProfile,
       UsersCtrl.patch
     )
     .delete(
-      validateResources,
+      validateUser,
       requireRolePermission('users', 'delete'),
       UsersCtrl.remove
     );
@@ -38,21 +42,24 @@ export default function usersRoutes(api: Router): void {
   api
     .route('/users/:user/beers')
     .get(
-      validateResources,
+      validateUser,
       requireRolePermission('users', 'read'),
       InventoryCtrl.getUsersBeers
     );
   api
     .route('/users/:user/beers/:beer')
     .post(
-      validateResources,
+      populateFullUser,
+      validateUser,
+      validateOrCreateBrewery,
+      validateOrCreateBeerByUntappdId,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
       populateFullUser,
       InventoryCtrl.addBeerToUser
     )
     .patch(
-      validateResources,
+      validateUser,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
       InventoryCtrl.updateBeerQuantity
