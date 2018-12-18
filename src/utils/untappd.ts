@@ -19,7 +19,7 @@ export class Untappd {
   }
 
   public async searchBeer(q: string) {
-    const url = `${this.apiHost}/v4/search/beer?q=${q}`;
+    const url = `/v4/search/beer?q=${q}`;
     return this.request(url).then((res) => ({
       beers: res.response.beers.items.map(
         (item: { beer: any; brewery: any }) => {
@@ -32,7 +32,7 @@ export class Untappd {
   }
 
   public async getBeerInfo(uid: number): Promise<IBeer> {
-    const url = `${this.apiHost}/v4/beer/info/${uid}`;
+    const url = `/v4/beer/info/${uid}`;
     return this.request(url).then((res) => {
       const translated = this.translateBeerResponse(res.response.beer);
       translated.brewery = this.translateBreweryResponse(
@@ -135,7 +135,6 @@ export class Untappd {
       url.indexOf('?') > -1
         ? `${url}&access_token=${this.apiKey}`
         : `${url}?access_token=${this.apiKey}`;
-    console.log(withToken);
-    return fetch(withToken).then((res) => res.json());
+    return fetch(`${this.apiHost}${withToken}`).then((res) => res.json());
   }
 }
