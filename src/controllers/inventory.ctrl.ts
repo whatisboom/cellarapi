@@ -52,14 +52,10 @@ export class InventoryCtrl {
   ): Promise<void> {
     try {
       const { amount } = req.body;
-      const user: IUserModel = req.resources.user;
-      const beer: IBeerModel = req.resources.beer;
-      const ownedBeer: IQuantityModel = await OwnedModel.findOne({
-        beer: beer._id,
-        user: user._id
-      });
-      if (ownedBeer === null) {
-        throw new ApiError('not-found: owned', 404);
+      const user: IUserModel = req.user;
+      const ownedBeer: IQuantityModel = req.resources.owned;
+      if (user._id !== ownedBeer.get('user').toString()) {
+        throw new Error('401 denied');
       }
       ownedBeer.set({ amount });
       await ownedBeer.save();
