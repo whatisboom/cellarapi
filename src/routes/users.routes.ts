@@ -4,7 +4,8 @@ import InventoryCtrl from '../controllers/inventory.ctrl';
 import {
   populateFullUser,
   validateOrCreateBrewery,
-  validateOrCreateBeerByUntappdId
+  validateOrCreateBeerByUntappdId,
+  validateOwned
 } from '../middleware';
 
 import {
@@ -57,9 +58,12 @@ export default function usersRoutes(api: Router): void {
       allowOwnProfile,
       populateFullUser,
       InventoryCtrl.addBeerToUser
-    )
+    );
+
+  api
+    .route('/inventory/:quantityId')
     .patch(
-      validateUser,
+      validateOwned,
       requireRolePermission('users', 'update'),
       allowOwnProfile,
       InventoryCtrl.updateBeerQuantity

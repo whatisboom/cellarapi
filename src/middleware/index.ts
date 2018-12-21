@@ -6,6 +6,7 @@ export * from './jwtValidator';
 export * from './populateFullUser';
 export * from './validateOrCreateBeer';
 export * from './validateOrCreateBrewery';
+export * from './validateOwned';
 export * from './validateUser';
 export * from './validateResources';
 export * from './validationErrorHandler';
