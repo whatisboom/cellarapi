@@ -10,7 +10,11 @@ export class UsersCtrl {
     next: NextFunction
   ): Promise<void> {
     try {
-      const users: IUserModel[] = await UserModel.find({});
+      const query: any = {};
+      if (req.query.search) {
+        query.username = new RegExp(req.query.search, 'i');
+      }
+      const users: IUserModel[] = await UserModel.find(query);
       res.json({
         users
       });
