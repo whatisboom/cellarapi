@@ -1,5 +1,4 @@
 import { Document, Model, model, Schema } from 'mongoose';
-import * as bcrypt from 'bcryptjs';
 import { IUser } from '../types';
 
 export interface IUserModel extends IUser, Document {
