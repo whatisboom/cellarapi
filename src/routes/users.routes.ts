@@ -67,5 +67,11 @@ export default function usersRoutes(api: Router): void {
       requireRolePermission('users', 'update'),
       allowOwnProfile,
       InventoryCtrl.updateBeerQuantity
+    )
+    .delete(
+      validateOwned,
+      requireRolePermission('users', 'update'),
+      allowOwnProfile,
+      InventoryCtrl.deleteOwnedBeer
     );
 }

@@ -75,7 +75,7 @@ export class BeersCtrl {
     try {
       const beer: IBeerModel = req.resources.beer;
       await beer.remove();
-      res.status(204).send();
+      res.status(204).send({});
     } catch (e) {
       next(e);
     }
