@@ -11,10 +11,21 @@ export class UsersCtrl {
   ): Promise<void> {
     try {
       const query: any = {};
+      const constraints = { limit: 100 };
       if (req.query.search) {
         query.username = new RegExp(req.query.search, 'i');
       }
-      const users: IUserModel[] = await UserModel.find(query);
+      if (req.query.limit) {
+        const limit = parseInt(req.query.limit, 10);
+        if (limit < 1000) {
+          constraints.limit = limit;
+        }
+      }
+      const users: IUserModel[] = await UserModel.find(
+        query,
+        null,
+        constraints
+      );
       res.json({
         users
       });
