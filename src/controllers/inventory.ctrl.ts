@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { IUserModel } from '../models/user.model';
+import UserModel, { IUserModel } from '../models/user.model';
 import { IQuantityModel, OwnedModel } from '../models/quantity.model';
 import { IBeerModel } from '../models/beer.model';
 import { ApiError } from '../errors';
@@ -96,6 +96,11 @@ export class InventoryCtrl {
   ): Promise<void> {
     try {
       const owned: IQuantityModel = req.resources.owned;
+      const user = await UserModel.findById(owned.user);
+      const beers = user.get('owned');
+      const ownedIndex = beers.findIndex((item: string) => item === owned._id);
+      beers.splice(ownedIndex, 1);
+      await user.save();
       await owned.remove();
       res.status(204).send({});
     } catch (e) {
