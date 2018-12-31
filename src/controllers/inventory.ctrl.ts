@@ -88,6 +88,20 @@ export class InventoryCtrl {
       next(e);
     }
   }
+
+  public async deleteOwnedBeer(
+    req: ValidatedResourcesRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const owned: IQuantityModel = req.resources.owned;
+      await owned.remove();
+      res.status(204).send({});
+    } catch (e) {
+      return next(e);
+    }
+  }
 }
 
 export default new InventoryCtrl();
