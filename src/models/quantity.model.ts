@@ -8,7 +8,8 @@ const QuantitySchema: Schema = new Schema(
     amount: {
       type: Number,
       required: true,
-      min: 0
+      min: 0,
+      max: 13
     },
     beer: {
       type: Schema.Types.ObjectId,
