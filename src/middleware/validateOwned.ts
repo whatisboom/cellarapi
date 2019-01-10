@@ -10,7 +10,9 @@ export async function validateOwned(
   try {
     req.resources = req.resources || {};
     const { quantityId } = req.params;
-    const owned = await OwnedModel.findById(quantityId);
+    const owned = await OwnedModel.findById(quantityId)
+      .populate('beer')
+      .exec();
     if (owned === null) {
       throw new Error(`404 owned not found`);
     }
