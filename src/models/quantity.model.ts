@@ -9,7 +9,24 @@ const QuantitySchema: Schema = new Schema(
       type: Number,
       required: true,
       min: 0,
-      max: 13
+      max: 13,
+      validate: {
+        validator: function(v: number): boolean {
+          return v >= this.forTrade;
+        }
+      }
+    },
+    forTrade: {
+      type: Number,
+      min: 0,
+      max: 13,
+      default: 0,
+      validate: {
+        validator: function(v: number): boolean {
+          return v <= this.amount;
+        },
+        message: 'For Trade must be less than or equal to amount owned.'
+      }
     },
     beer: {
       type: Schema.Types.ObjectId,
