@@ -5,7 +5,6 @@ import { Untappd } from '../utils';
 import BreweryModel, { IBreweryModel } from '../models/brewery.model';
 
 export async function validateOrCreateBeerByUntappdId(
-
   req: ValidatedResourcesRequest,
   res: Response,
   next: NextFunction
@@ -40,7 +39,6 @@ export async function validateOrCreateBeerBySlug(
 ): Promise<void> {
   req.resources = req.resources || {};
   try {
-    console.log(req.params.beer);
     let beer = await BeerModel.findOne({
       slug: req.params.beer
     });
@@ -53,4 +51,3 @@ export async function validateOrCreateBeerBySlug(
     next(e);
   }
 }
-
