@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jsonwebtoken from 'jsonwebtoken';
-import { IUserModel } from '../models/user.model';
+import UserModel, { IUserModel } from '../models/user.model';
 import { ApiError } from '../errors';
 import RefreshTokenModel, {
   IRefreshTokenModel
@@ -21,23 +21,27 @@ export class AuthCtrl {
   ): Promise<void> {
     try {
       const { refreshToken } = req.body;
+      const n = new Date();
       const existingRefreshToken: IRefreshTokenModel = await RefreshTokenModel.findOne(
         {
           refreshToken,
-          userId: req.user._id,
           expires: {
-            $gt: new Date()
+            $gte: new Date(n.getFullYear(), n.getMonth(), n.getDate())
           }
         }
       );
 
       if (existingRefreshToken === null) {
-        const e: ApiError = new ApiError('unauthorized');
+        const e: ApiError = new ApiError('Invalid Refresh Token');
         e.status = 401;
         throw e;
       }
 
-      const token = this.getJwtForUser(req.user);
+      const user: IUserModel = await UserModel.findById(
+        existingRefreshToken.get('userId')
+      );
+
+      const token = this.getJwtForUser(user);
 
       res.json({
         token
@@ -77,17 +81,18 @@ export class AuthCtrl {
   }
 
   private async getOrCreateRefreshToken(
-    uid: string
+    userId: string
   ): Promise<IRefreshTokenModel> {
+    const n = new Date();
     let token: IRefreshTokenModel = await RefreshTokenModel.findOne({
-      userId: uid,
+      userId: userId,
       expires: {
-        $gt: new Date()
+        $gte: new Date(n.getFullYear(), n.getMonth(), n.getDate())
       }
     });
     if (!token) {
       token = await RefreshTokenModel.create({
-        userId: uid
+        userId
       });
     }
     return token;
