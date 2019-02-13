@@ -65,12 +65,17 @@ export class AuthCtrl {
     const code = req.body.code;
     const untappdClient = new Untappd();
     try {
-      const user = await untappdClient.oauthAndCreateUser(code);
+      const { statusCode, user } = await untappdClient.oauthAndCreateUser(code);
       const token = this.getJwtForUser(user);
       const refreshToken: IRefreshTokenModel = await this.getOrCreateRefreshToken(
         user._id
       );
-      res.json({ user, token, refreshToken: refreshToken.get('refreshToken') });
+      res.status(statusCode).json({
+        statusCode,
+        user,
+        token,
+        refreshToken: refreshToken.get('refreshToken')
+      });
     } catch (e) {
       next(e);
     }

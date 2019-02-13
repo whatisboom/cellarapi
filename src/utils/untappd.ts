@@ -9,7 +9,12 @@ export class Untappd {
 
   constructor(private apiKey: string = '') {}
 
-  public async oauthAndCreateUser(code: string): Promise<IUserModel> {
+  public async oauthAndCreateUser(
+    code: string
+  ): Promise<{
+    statusCode: number;
+    user: IUserModel;
+  }> {
     this.accessToken = await this.getAccessToken(code);
     const userResponse = await this.getUserInfo();
     const data = this.translateUserInfoResponse(userResponse);
@@ -113,18 +118,29 @@ export class Untappd {
     return <IBreweryModel>(<unknown>translated);
   }
 
-  private async findOrCreateUser(data: IUser): Promise<IUserModel> {
+  private async findOrCreateUser(
+    data: IUser
+  ): Promise<{
+    statusCode: number;
+    user: IUserModel;
+  }> {
     try {
+      let statusCode = 200;
       const exists: IUserModel = await UserModel.findOne({
         'oauth.untappd': data.oauth.untappd
       });
       if (exists !== null) {
         exists.untappdApiKey = this.accessToken;
-        return await exists.save();
+        const saved = await exists.save();
+        return {
+          statusCode,
+          user: saved
+        };
       }
       const created: IUserModel = new UserModel(data);
+      statusCode = 201;
       const user = await created.save();
-      return user;
+      return { statusCode, user };
     } catch (e) {
       console.log(e);
     }
