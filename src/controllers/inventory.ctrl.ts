@@ -1,14 +1,15 @@
-import { Response, NextFunction } from 'express';
+import { NextFunction } from 'express';
 import UserModel, { IUserModel } from '../models/user.model';
 import { IQuantityModel, OwnedModel } from '../models/quantity.model';
 import { IBeerModel } from '../models/beer.model';
 import { ApiError } from '../errors';
 import { ValidatedResourcesRequest } from '../types';
+import { BeerCellarResponse } from '../types/response';
 
 export class InventoryCtrl {
   public async addBeerToUser(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -39,9 +40,11 @@ export class InventoryCtrl {
 
       await user.save();
 
-      res.status(200).json({
+      res.data = {
         user
-      });
+      };
+      res.status(200);
+      next();
     } catch (e) {
       next(e);
     }
@@ -49,7 +52,7 @@ export class InventoryCtrl {
 
   public async updateBeerQuantity(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -67,9 +70,11 @@ export class InventoryCtrl {
       }
 
       await ownedBeer.save();
-      res.status(200).json({
+      res.data = {
         beer: ownedBeer
-      });
+      };
+      res.status(202);
+      next();
     } catch (e) {
       next(e);
     }
@@ -77,7 +82,7 @@ export class InventoryCtrl {
 
   public async getUsersBeers(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -89,9 +94,11 @@ export class InventoryCtrl {
           path: 'brewery'
         }
       });
-      res.status(200).json({
+      res.data = {
         beers: ownedBeers
-      });
+      };
+      res.status(200);
+      next();
     } catch (e) {
       next(e);
     }
@@ -99,7 +106,7 @@ export class InventoryCtrl {
 
   public async deleteOwnedBeer(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -110,7 +117,8 @@ export class InventoryCtrl {
       beers.splice(ownedIndex, 1);
       await user.save();
       await owned.remove();
-      res.status(204).send({});
+      res.status(204);
+      next();
     } catch (e) {
       return next(e);
     }
