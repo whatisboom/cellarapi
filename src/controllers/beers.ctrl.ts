@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express';
 import BeerModel, { IBeerModel } from '../models/beer.model';
 import { ValidatedResourcesRequest } from '../types';
+import { BeerCellarResponse } from '../types/response';
 
 export class BeersCtrl {
   public async post(
@@ -35,15 +36,17 @@ export class BeersCtrl {
 
   public async get(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
       const beer: IBeerModel = req.resources.beer;
       await beer.populate('brewery').execPopulate();
-      res.json({
+      res.status(200);
+      res.data = {
         beer
-      });
+      };
+      next();
     } catch (e) {
       return next(e);
     }

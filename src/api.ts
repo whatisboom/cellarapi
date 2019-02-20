@@ -15,6 +15,7 @@ import {
   genericErrorHandler,
   jwtErrorHandler,
   jwtValidator,
+  sendSuccess,
   validationErrorHandler
 } from './middleware';
 
@@ -48,6 +49,7 @@ require('./routes/breweries.routes').default(api);
 require('./routes/search.routes').default(api);
 require('./routes/users.routes').default(api);
 
+api.use(sendSuccess);
 api.use(validationErrorHandler);
 api.use(genericErrorHandler);
 
