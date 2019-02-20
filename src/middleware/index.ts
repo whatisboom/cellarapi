@@ -4,6 +4,7 @@ export * from './checkPermissions';
 export * from './genericErrorHandler';
 export * from './jwtValidator';
 export * from './populateFullUser';
+export * from './sendSuccess';
 export * from './validateOrCreateBeer';
 export * from './validateOrCreateBrewery';
 export * from './validateOwned';
