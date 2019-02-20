@@ -6,6 +6,7 @@ import RefreshTokenModel, {
   IRefreshTokenModel
 } from '../models/refresh-token.model';
 import { Untappd } from '../utils';
+import { BeerCellarResponse } from '../types/response';
 
 export class AuthCtrl {
   constructor() {
@@ -16,7 +17,7 @@ export class AuthCtrl {
 
   public async getAccessToken(
     req: Request,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -43,9 +44,11 @@ export class AuthCtrl {
 
       const token = this.getJwtForUser(user);
 
-      res.json({
+      res.data = {
         token
-      });
+      };
+      res.status(201);
+      next();
     } catch (e) {
       return next(e);
     }
@@ -65,7 +68,11 @@ export class AuthCtrl {
     );
   }
 
-  public async oauth(req: Request, res: Response, next: NextFunction) {
+  public async oauth(
+    req: Request,
+    res: BeerCellarResponse,
+    next: NextFunction
+  ) {
     const code = req.body.code;
     const untappdClient = new Untappd();
     try {
@@ -74,7 +81,13 @@ export class AuthCtrl {
       const refreshToken: IRefreshTokenModel = await this.getOrCreateRefreshToken(
         user._id
       );
-      res.json({ user, token, refreshToken: refreshToken.get('refreshToken') });
+      res.data = {
+        user,
+        token,
+        refreshToken: refreshToken.get('refreshToken')
+      };
+      res.status(200);
+      next();
     } catch (e) {
       next(e);
     }
