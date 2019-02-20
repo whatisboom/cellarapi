@@ -1,4 +1,4 @@
-import { Response, NextFunction } from 'express';
+import { NextFunction } from 'express';
 import BeerModel, { IBeerModel } from '../models/beer.model';
 import { ValidatedResourcesRequest } from '../types';
 import { BeerCellarResponse } from '../types/response';
@@ -6,14 +6,16 @@ import { BeerCellarResponse } from '../types/response';
 export class BeersCtrl {
   public async post(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
       const beer: IBeerModel = await BeerModel.create(req.body);
-      res.json({
+      res.data = {
         beer
-      });
+      };
+      res.status(201);
+      next();
     } catch (e) {
       next(e);
     }
@@ -21,14 +23,16 @@ export class BeersCtrl {
 
   public async list(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
       const beers: IBeerModel[] = await BeerModel.find({});
-      res.json({
+      res.data = {
         beers
-      });
+      };
+      res.status(200);
+      next();
     } catch (e) {
       next(e);
     }
@@ -54,16 +58,18 @@ export class BeersCtrl {
 
   public async patch(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
       let beer: IBeerModel = req.resources.beer;
       beer.set(req.body);
       beer = await beer.save();
-      res.json({
+      res.data = {
         beer
-      });
+      };
+      res.status(202);
+      next();
     } catch (e) {
       next(e);
     }
@@ -71,13 +77,14 @@ export class BeersCtrl {
 
   public async remove(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
       const beer: IBeerModel = req.resources.beer;
       await beer.remove();
-      res.status(204).send({});
+      res.status(204);
+      next();
     } catch (e) {
       next(e);
     }
