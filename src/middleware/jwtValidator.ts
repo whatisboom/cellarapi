@@ -6,13 +6,8 @@ export function jwtValidator(JWT_SECRET: string): RequestHandler {
   return jwt({
     secret: JWT_SECRET
   }).unless({
-    path: [
-      '/',
-      '/auth/signin',
-      '/auth/signup',
-      /^\/loaderio/,
-      '/auth/oauth/untappd'
-    ]
+
+    path: ['/', /^\/auth/, /^\/loaderio/]
   });
 }
 

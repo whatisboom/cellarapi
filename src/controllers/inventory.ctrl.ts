@@ -17,6 +17,7 @@ export class InventoryCtrl {
       const beer: IBeerModel = req.resources.beer;
 
       const amount: number = req.body.amount;
+      const forTrade: number = req.body.forTrade;
 
       const ownedBeer: IQuantityModel = await OwnedModel.findOne({
         beer: beer._id,
@@ -30,7 +31,8 @@ export class InventoryCtrl {
       const createdBeer: IQuantityModel = await OwnedModel.create({
         beer: beer._id,
         user: user._id,
-        amount
+        amount,
+        forTrade
       });
 
       user.get('owned').push(createdBeer);
@@ -51,13 +53,19 @@ export class InventoryCtrl {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { amount } = req.body;
+      const { amount, forTrade } = req.body;
       const user: IUserModel = req.user;
       const ownedBeer: IQuantityModel = req.resources.owned;
       if (user._id !== ownedBeer.get('user').toString()) {
         throw new Error('401 denied');
       }
-      ownedBeer.set({ amount });
+      if (amount) {
+        ownedBeer.set({ amount });
+      }
+      if (forTrade) {
+        ownedBeer.set({ forTrade });
+      }
+
       await ownedBeer.save();
       res.status(200).json({
         beer: ownedBeer

@@ -14,11 +14,13 @@ export function initDB() {
     {
       useNewUrlParser: true,
       useCreateIndex: true,
-      useFindAndModify: false
+      useFindAndModify: false,
+      reconnectTries: Number.MAX_VALUE,
+      reconnectInterval: 1000
     }
   );
   const connection: mongoose.Connection = mongoose.connection;
-  connection.on('error', e => {
+  connection.on('error', (e) => {
     throw e;
   });
 }
