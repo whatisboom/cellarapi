@@ -7,7 +7,7 @@ export function sendSuccess(
   next: NextFunction
 ) {
   if (!res.headersSent) {
-    res.send({
+    res.json({
       ...res.data,
       statusCode: res.statusCode
     });
