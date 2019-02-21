@@ -2,7 +2,7 @@ import { Router } from 'express';
 import BeersCtrl from '../controllers/beers.ctrl';
 import {
   requireRolePermission,
-  validateOrCreateBeerBySlug,
+  validateBySlug,
   validateOrCreateBrewery,
   populateFullUser
 } from '../middleware';
@@ -17,19 +17,19 @@ export default function beersRoutes(api: Router): void {
     .route('/beers/:beer')
     .get(
       populateFullUser,
-      validateOrCreateBeerBySlug,
+      validateBySlug,
       requireRolePermission('beers', 'read'),
       BeersCtrl.get
     )
     .patch(
       populateFullUser,
-      validateOrCreateBeerBySlug,
+      validateBySlug,
       requireRolePermission('beers', 'update'),
       BeersCtrl.patch
     )
     .delete(
       populateFullUser,
-      validateOrCreateBeerBySlug,
+      validateBySlug,
       requireRolePermission('beers', 'delete'),
       BeersCtrl.remove
     );

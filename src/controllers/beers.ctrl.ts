@@ -31,7 +31,6 @@ export class BeersCtrl {
       res.data = {
         beers
       };
-      res.status(200);
       next();
     } catch (e) {
       next(e);
@@ -46,7 +45,6 @@ export class BeersCtrl {
     try {
       const beer: IBeerModel = req.resources.beer;
       await beer.populate('brewery').execPopulate();
-      res.status(200);
       res.data = {
         beer
       };
