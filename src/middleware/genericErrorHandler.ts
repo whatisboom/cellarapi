@@ -7,10 +7,11 @@ export function genericErrorHandler(
   res: Response,
   next: NextFunction
 ): void {
-  console.log(error);
   if (!res.headersSent) {
     res.status(error.status || 500).json({
-      error
+      error,
+      statusCode: error.status,
+      message: error.message
     });
   } else {
     next(error);
