@@ -24,6 +24,7 @@ export async function validateOrCreateBeerByUntappdId(
       });
       beer = new BeerModel(beer);
       beer = await beer.save();
+      res.status(201);
     }
     req.resources.beer = beer;
     next();
@@ -32,7 +33,7 @@ export async function validateOrCreateBeerByUntappdId(
   }
 }
 
-export async function validateOrCreateBeerBySlug(
+export async function validateBySlug(
   req: ValidatedResourcesRequest,
   res: Response,
   next: NextFunction
@@ -43,7 +44,7 @@ export async function validateOrCreateBeerBySlug(
       slug: req.params.beer
     });
     if (beer === null && req.user.untappdApiKey) {
-      throw new Error(`404 beer not found: ${req.params.beer}`);
+      throw new Error(`Beer not found: ${req.params.beer}`);
     }
     req.resources.beer = beer;
     next();

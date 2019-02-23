@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express';
 import { OwnedModel } from '../models/quantity.model';
 import { ValidatedResourcesRequest } from '../types';
+import { ApiError } from '../errors';
 
 export async function validateOwned(
   req: ValidatedResourcesRequest,
@@ -14,7 +15,7 @@ export async function validateOwned(
       .populate('beer')
       .exec();
     if (owned === null) {
-      throw new Error(`404 owned not found`);
+      next(new ApiError(`Inventory not found with id: ${quantityId}`, 404));
     }
     req.resources.owned = owned;
     next();

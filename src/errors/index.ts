@@ -1,3 +1,3 @@
-export * from './ApiError';
-export * from './ConflictError';
-export * from './UnauthorizedError';
+export * from './api-error';
+export * from './conflict-error';
+export * from './unauthorized-error';

@@ -1,12 +1,13 @@
-import { Response, NextFunction } from 'express';
+import { NextFunction } from 'express';
 import UserModel, { IUserModel } from '../models/user.model';
 import { ApiError } from '../errors';
 import { ValidatedResourcesRequest } from '../types';
+import { BeerCellarResponse } from '../types/response';
 
 export class UsersCtrl {
   public async list(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -26,9 +27,12 @@ export class UsersCtrl {
         null,
         constraints
       );
-      res.json({
+
+      res.data = {
         users
-      });
+      };
+      res.status(200);
+      next();
     } catch (e) {
       return next(e);
     }
@@ -36,7 +40,7 @@ export class UsersCtrl {
 
   public async get(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -52,9 +56,11 @@ export class UsersCtrl {
           }
         })
         .execPopulate();
-      res.json({
+      res.data = {
         user
-      });
+      };
+      res.status(200);
+      next();
     } catch (e) {
       return next(e);
     }
@@ -62,16 +68,18 @@ export class UsersCtrl {
 
   public async patch(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
       let user: IUserModel = req.resources.user;
       user.set(req.body);
       user = await user.save();
-      res.json({
+      res.data = {
         user
-      });
+      };
+      res.status(202);
+      next();
     } catch (e) {
       return next(e);
     }
@@ -79,13 +87,14 @@ export class UsersCtrl {
 
   public async remove(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
       const user: IUserModel = req.resources.user;
       await user.remove();
-      res.sendStatus(204);
+      res.status(204);
+      next();
     } catch (e) {
       return next(e);
     }
@@ -93,7 +102,7 @@ export class UsersCtrl {
 
   public async getOwnProfile(
     req: ValidatedResourcesRequest,
-    res: Response,
+    res: BeerCellarResponse,
     next: NextFunction
   ): Promise<void> {
     try {
@@ -110,9 +119,11 @@ export class UsersCtrl {
         const e: ApiError = new ApiError('not-found', 404);
         throw e;
       } else {
-        res.status(200).json({
+        res.data = {
           user
-        });
+        };
+        res.status(200);
+        next();
       }
     } catch (e) {
       return next(e);
