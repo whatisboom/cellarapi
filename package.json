@@ -13,7 +13,9 @@
     "build": "./node_modules/.bin/tsc",
     "serve": "./node_modules/.bin/nodemon dist/index.js",
     "tsc": "tsc",
-    "ip": "curl http://169.254.169.254/latest/meta-data/public-ipv4"
+    "ip": "curl http://169.254.169.254/latest/meta-data/public-ipv4",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "heroku-run-build-script": true,
   "author": "",
@@ -32,7 +34,8 @@
     "morgan": "1.9.1",
     "node-fetch": "2.3.0",
     "rand-token": "0.4.0",
-    "superagent-defaults": "0.1.14"
+    "superagent-defaults": "0.1.14",
+    "snyk": "^1.192.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
@@ -53,5 +56,6 @@
     "supertest": "3.3.0",
     "ts-jest": "23.10.4",
     "typescript": "3.1.4"
-  }
+  },
+  "snyk": true
 }
