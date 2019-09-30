@@ -22,3 +22,5 @@ patch:
         patched: '2019-09-30T15:10:31.330Z'
     - snyk > snyk-nodejs-lockfile-parser > graphlib > lodash:
         patched: '2019-09-30T15:10:31.330Z'
+    - snyk > snyk-nuget-plugin > dotnet-deps-parser > lodash:
+        patched: '2019-09-30T15:32:18.828Z'
