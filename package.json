@@ -14,7 +14,7 @@
     "serve": "./node_modules/.bin/nodemon dist/index.js",
     "tsc": "tsc",
     "ip": "curl http://169.254.169.254/latest/meta-data/public-ipv4",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "heroku-run-build-script": true,
@@ -35,7 +35,7 @@
     "node-fetch": "2.3.0",
     "rand-token": "0.4.0",
     "superagent-defaults": "0.1.14",
-    "snyk": "^1.236.1"
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
