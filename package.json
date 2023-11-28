@@ -27,7 +27,7 @@
     "cors": "2.8.4",
     "dotenv": "6.1.0",
     "express": "4.16.4",
-    "express-jwt": "5.3.1",
+    "express-jwt": "6.1.1",
     "helmet": "3.21.1",
     "jsonwebtoken": "8.3.0",
     "mongoose": "5.7.5",
@@ -35,7 +35,7 @@
     "node-fetch": "2.3.0",
     "rand-token": "0.4.0",
     "superagent-defaults": "0.1.14",
-    "snyk": "^1.236.1"
+    "snyk": "^1.685.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
